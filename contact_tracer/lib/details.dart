@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'event.dart';
 
 class Details {
-
   BuildContext context;
   Event e;
 
@@ -12,7 +11,6 @@ class Details {
   }
 
   MaterialPageRoute getRoute() {
-
     Card map = Card(
       child: Placeholder(),
     );
@@ -21,21 +19,21 @@ class Details {
       child: ListTile(
         title: Text('Location'),
         subtitle: Text(e.location),
-      )
+      ),
     );
 
-    Card person= Card(
+    Card person = Card(
       child: ListTile(
         title: Text('Person'),
         subtitle: Text(e.person),
-      )
+      ),
     );
 
-    Card date= Card(
+    Card date = Card(
       child: ListTile(
         title: Text('Date'),
         subtitle: Text(e.date),
-      )
+      ),
     );
 
     return MaterialPageRoute(
@@ -44,23 +42,20 @@ class Details {
           appBar: AppBar(
             title: Text('Event Details'),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back), 
+              icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          body: Container(
-            padding: EdgeInsets.all(32),
-            child: ListView(
-              children: [
-                map,
-                location,
-                person,
-                date,
-              ],
-            ),
+          body: ListView(
+            children: [
+              map,
+              location,
+              person,
+              date,
+            ],
           ),
         );
-      }
+      },
     );
   }
 }

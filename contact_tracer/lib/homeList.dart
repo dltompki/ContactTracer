@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'event.dart';
 import 'details.dart';
+import 'addEvent.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -8,10 +9,11 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
-
-  Event event1 = new Event('London Bridge', 'The Queen', 'Tuesday');
-  Event event2 = new Event('Home', 'Dallas', 'Wednesday');
-  Event event3 = new Event('Five Guys', 'Drew', 'Thursday');
+  List<Event> eventList = [
+    Event('London Bridge', 'The Queen', 'Tuesday'),
+    Event('Home', 'Dallas', 'Wednesday'),
+    Event('Five Guys', 'Drew', 'Thursday'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +24,7 @@ class _HomeListState extends State<HomeList> {
         title: Text('Contact Tracer Events'),
       ),
       body: ListView(
-        children: [
-          _buildRow(event1),
-          Divider(),
-          _buildRow(event2),
-          Divider(),
-          _buildRow(event3),
-        ]
-
+        children: _buildRows(eventList),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add New Event',
@@ -39,16 +34,24 @@ class _HomeListState extends State<HomeList> {
     );
   }
 
-  Widget _buildRow(Event e) {
+  List<Widget> _buildRows(List<Event> eList) {
+    List<Widget> rows = [];
+
+    for (var e in eList) {
+      rows.add(_rowFactory(e));
+      rows.add(Divider());
+    }
+
+    return rows;
+  }
+
+  Widget _rowFactory(Event e) {
     return ListTile(
-      leading: IconButton(
-        icon: Icon(Icons.place),
-        color: Colors.greenAccent[200],
-        onPressed: () => _pushDetails(e),
-      ),
+      leading: Icon(Icons.place, color: Colors.greenAccent[200],),
       title: Text(e.location),
       subtitle: Text(e.person),
       trailing: Text(e.date),
+      onTap: () => {_pushDetails(e)},
     );
   }
 
@@ -56,7 +59,14 @@ class _HomeListState extends State<HomeList> {
     Navigator.of(context).push(new Details(context, event: e).getRoute());
   }
 
+  void addEventToList(Event e) {
+    setState(() {
+      eventList.add(e);
+    });
+  }
+
   void _pushAddEvent() {
-    
+    Navigator.of(context)
+        .push(new AddEvent(context, callback: addEventToList).getRoute());
   }
 }
