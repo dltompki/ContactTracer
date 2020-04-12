@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'event.dart';
+import 'details.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -6,6 +8,11 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
+
+  Event event1 = new Event('London Bridge', 'The Queen', 'Tuesday');
+  Event event2 = new Event('Home', 'Dallas', 'Wednesday');
+  Event event3 = new Event('Five Guys', 'Drew', 'Thursday');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,11 +23,11 @@ class _HomeListState extends State<HomeList> {
       ),
       body: ListView(
         children: [
-          _buildRow('London Bridge', 'The Queen', 'Tuesday'),
+          _buildRow(event1),
           Divider(),
-          _buildRow('Home', 'Dallas', 'Wednesday'),
+          _buildRow(event2),
           Divider(),
-          _buildRow('Five Guys', 'Drew', 'Thursday'),
+          _buildRow(event3),
         ]
 
       ),
@@ -32,21 +39,21 @@ class _HomeListState extends State<HomeList> {
     );
   }
 
-  Widget _buildRow(location, person, date) {
+  Widget _buildRow(Event e) {
     return ListTile(
       leading: IconButton(
         icon: Icon(Icons.place),
-        color: Colors.blue[800],
-        onPressed: _pushDetails,
+        color: Colors.greenAccent[200],
+        onPressed: () => _pushDetails(e),
       ),
-      title: Text(location),
-      subtitle: Text(person),
-      trailing: Text(date),
+      title: Text(e.location),
+      subtitle: Text(e.person),
+      trailing: Text(e.date),
     );
   }
 
-  void _pushDetails() {
-
+  void _pushDetails(Event e) {
+    Navigator.of(context).push(new Details(context, event: e).getRoute());
   }
 
   void _pushAddEvent() {
