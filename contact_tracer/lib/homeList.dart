@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
+import 'contactTracer.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -47,7 +48,7 @@ class _HomeListState extends State<HomeList> {
 
   Widget _rowFactory(Event e) {
     return ListTile(
-      leading: Icon(Icons.place, color: Colors.greenAccent[200],),
+      leading: Icon(Icons.place, color: accentColor),
       title: Text(e.location),
       subtitle: Text(e.person),
       trailing: Text(e.date),

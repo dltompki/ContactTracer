@@ -104,7 +104,7 @@ class AddEvent {
     } else {
       showDialog(
         context: context, 
-        barrierDismissible: false, 
+        barrierDismissible: false, // force the user to have to press okay
         useRootNavigator: false,
         builder: (context) {
           return unfilledField;

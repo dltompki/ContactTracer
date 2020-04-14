@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'homeList.dart';
 
+final primaryColor = Colors.blueGrey[700];
+final accentColor = Colors.greenAccent[200];
+
 class ContactTracer extends StatelessWidget {
 
   @override
@@ -10,9 +13,9 @@ class ContactTracer extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
 
-        primaryColor: Colors.blueGrey[700],
+        primaryColor: primaryColor,
 
-        accentColor: Colors.greenAccent[200],
+        accentColor: accentColor,
         
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
