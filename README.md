@@ -1,37 +1,17 @@
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/dylantompkins/ContactTracer/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/dylantompkins/ContactTracer/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# Fighting COVID-19 With Data
+**Contact Tracer** is an app designed to store data collected by the user about their interactions during a pandemic, so that in the event of the user being tested positive, they can provide health officals with as much information as possible to help them contain the spread.
+## Motivation
+Obiously the outbreak of coronavirus is a big deal, and the main motivation for this project, but there some other stuff too.
+### [Code: Buffalo Hackathon]([https://www.43north.org/code-buffalo/](https://www.43north.org/code-buffalo/))
+This project is part of my first time participating in a Hackathon. With the prompt of "helping the community", that is the big picture goal for this project.
+### Learning New Technologies
+In order to build this app, I have had to teach myself a few new things. Here's a list, with links for refrence:
+- [Dart](dart.dev)
+- [Flutter](flutter.dev)
+## Execution
+**Contact Tracer** is built using [Flutter](flutter.dev), an SDK created by Google for the fast development of apps for a multitude of platforms, including Android, iOS, Web, and Desktop. The language used to program all of these platforms simultaneously is [Dart](dart.dev).
+## Inspiration and Refrence
+- [Contact Tracing as a concept](https://en.wikipedia.org/wiki/Contact_tracing)
+- [Google and Apple's announcement of a partnership on a bluetooth contact tracing protocol](https://blog.google/inside-google/company-announcements/apple-and-google-partner-covid-19-contact-tracing-technology)
+- [A similar system created by MIT](https://pact.mit.edu/)
+- [SafePaths app, led by MIT, with using a path-crossing algorithm to detect if people have "crossed paths"](https://www.media.mit.edu/projects/safepaths/overview/)
