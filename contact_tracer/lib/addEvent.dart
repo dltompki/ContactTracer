@@ -6,13 +6,23 @@ class AddEvent {
   static BuildContext context;
   Function callback;
 
+  static TimeOfDay _selectedTime;
+  static DateTime _selectedDate;
+
   static String inputLocation;
   static String inputPerson;
   static String inputDate;
+  static String inputTime;
 
   AddEvent(BuildContext context, {Function callback}) {
     AddEvent.context = context;
     this.callback = callback;
+
+    _selectedTime = TimeOfDay.now();
+    _selectedDate = DateTime.now();
+
+    inputDate = _selectedDate.toUtc.toString();
+    inputTime = _selectedTime.toString();
   }
 
   Card location = Card(
@@ -42,11 +52,27 @@ class AddEvent {
   Card date = Card(
     child: ListTile(
       leading: Icon(Icons.date_range),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Date'),
-        onChanged: (String value) {
-          inputDate = value;
-        },
+      title: Column(
+        children: [
+          Row(children: [
+            Text('Date: '),
+            RaisedButton(
+              child: Text(_selectedDate.toString()),
+              onPressed: () {
+                pickDateAndStore();
+              },
+            ),
+          ]),
+          Row(children: [
+            Text('Time: '),
+            RaisedButton(
+              child: Text(_selectedTime.toString()),
+              onPressed: () {
+                pickTimeAndStore();
+              },
+            ),
+          ]),
+        ],
       ),
     ),
   );
@@ -94,21 +120,42 @@ class AddEvent {
     ],
   );
 
+  static void pickDateAndStore() async {
+    _selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+    );
+
+    inputDate = _selectedDate.toUtc().toString();
+  }
+
+  static void pickTimeAndStore() async {
+    _selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    inputTime = _selectedTime.toString();
+  }
+
   void _submitNewEvent() {
     if ((inputLocation != null) &&
         (inputPerson != null) &&
-        (inputDate != null)) {
-      Event e = new Event(inputLocation, inputPerson, inputDate);
+        (inputDate != null) &&
+        (inputTime != null)) {
+      Event e = new Event(inputLocation, inputPerson, inputDate, inputTime);
       callback(e);
       Navigator.pop(context);
     } else {
       showDialog(
-        context: context, 
+        context: context,
         barrierDismissible: false, // force the user to have to press okay
         useRootNavigator: false,
         builder: (context) {
           return unfilledField;
-          },
+        },
       );
     }
   }
