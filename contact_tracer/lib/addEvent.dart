@@ -1,83 +1,89 @@
 import 'package:contact_tracer/event.dart';
-import 'package:contact_tracer/homeList.dart';
 import 'package:flutter/material.dart';
 
 class AddEvent {
   static BuildContext context;
   Function callback;
 
+  static String inputLocation;
+  static String inputPerson;
+
   static TimeOfDay _selectedTime;
   static DateTime _selectedDate;
 
-  static String inputLocation;
-  static String inputPerson;
-  static String inputDate;
   static String inputTime;
+  static String inputDate;
 
-  AddEvent(BuildContext context, {Function callback}) {
-    AddEvent.context = context;
+  // static TimeOfDay _selectedTime = TimeOfDay.now();
+  // static DateTime _selectedDate = DateTime.now();
+
+  // static String inputDate = _selectedDate.toUtc.toString();
+  // static String inputTime = _selectedTime.toString();
+
+  AddEvent(BuildContext incomingContext, {Function callback}) {
+    context = incomingContext;
     this.callback = callback;
+  }
 
+  MaterialPageRoute getRoute() {
     _selectedTime = TimeOfDay.now();
     _selectedDate = DateTime.now();
 
     inputDate = _selectedDate.toUtc.toString();
     inputTime = _selectedTime.toString();
-  }
 
-  Card location = Card(
-    child: ListTile(
-      leading: Icon(Icons.place),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Location'),
-        onChanged: (String value) {
-          inputLocation = value;
-        },
+    Card location = Card(
+      child: ListTile(
+        leading: Icon(Icons.place),
+        title: TextField(
+          decoration: InputDecoration(labelText: 'Location'),
+          onChanged: (String value) {
+            inputLocation = value;
+          },
+        ),
       ),
-    ),
-  );
+    );
 
-  Card person = Card(
-    child: ListTile(
-      leading: Icon(Icons.person),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Person'),
-        onChanged: (String value) {
-          inputPerson = value;
-        },
+    Card person = Card(
+      child: ListTile(
+        leading: Icon(Icons.person),
+        title: TextField(
+          decoration: InputDecoration(labelText: 'Person'),
+          onChanged: (String value) {
+            inputPerson = value;
+          },
+        ),
       ),
-    ),
-  );
+    );
 
-  Card date = Card(
-    child: ListTile(
-      leading: Icon(Icons.date_range),
-      title: Column(
-        children: [
-          Row(children: [
-            Text('Date: '),
-            RaisedButton(
-              child: Text(_selectedDate.toString()),
-              onPressed: () {
-                pickDateAndStore();
-              },
-            ),
-          ]),
-          Row(children: [
-            Text('Time: '),
-            RaisedButton(
-              child: Text(_selectedTime.toString()),
-              onPressed: () {
-                pickTimeAndStore();
-              },
-            ),
-          ]),
-        ],
+    Card date = Card(
+      child: ListTile(
+        leading: Icon(Icons.date_range),
+        title: Column(
+          children: [
+            Row(children: [
+              Text('Date: '),
+              RaisedButton(
+                child: Text(_selectedDate.toString()),
+                onPressed: () {
+                  pickDateAndStore();
+                },
+              ),
+            ]),
+            Row(children: [
+              Text('Time: '),
+              RaisedButton(
+                child: Text(_selectedTime.format(context)),
+                onPressed: () {
+                  pickTimeAndStore();
+                },
+              ),
+            ]),
+          ],
+        ),
       ),
-    ),
-  );
+    );
 
-  MaterialPageRoute getRoute() {
     return MaterialPageRoute(
       builder: (context) {
         return Scaffold(
@@ -104,22 +110,6 @@ class AddEvent {
     );
   }
 
-  AlertDialog unfilledField = new AlertDialog(
-    title: Text('Not All Text Fields Filled'),
-    content: SingleChildScrollView(
-      child:
-          Text('Please fill out the location, person, and date of you event.'),
-    ),
-    actions: <Widget>[
-      FlatButton(
-        child: Text('Okay'),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    ],
-  );
-
   static void pickDateAndStore() async {
     _selectedDate = await showDatePicker(
       context: context,
@@ -141,6 +131,23 @@ class AddEvent {
   }
 
   void _submitNewEvent() {
+
+    AlertDialog unfilledField = new AlertDialog(
+      title: Text('Not All Text Fields Filled'),
+      content: SingleChildScrollView(
+        child: Text(
+            'Please fill out the location, person, and date of you event.'),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Okay'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
     if ((inputLocation != null) &&
         (inputPerson != null) &&
         (inputDate != null) &&
