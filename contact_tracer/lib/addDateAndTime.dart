@@ -18,12 +18,8 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
 
   static Utility util = Utility();
 
-  static String _inputTime = util.formatTime(TimeOfDay.now());
-  static String _inputDate = util.formatDate(DateTime.now());
-
-  String get inputDate => _inputDate;
-
-  String get inputTime => _inputTime;
+  static TimeOfDay _inputTime = TimeOfDay.now();
+  static DateTime _inputDate = DateTime.now();
 
   _AddDateAndTimeState(Function updateInputDateAndTime) {
     updateInputDateAndTime(
@@ -42,7 +38,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
 
     setState(() {
       if (_selectedDate != null) {
-        _inputDate = util.formatDate(_selectedDate);
+        _inputDate = _selectedDate;
         widget.updateInputDateAndTime(inputDate: _inputDate);
       }
     });
@@ -56,7 +52,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
 
     setState(() {
       if (_selectedTime != null) {
-        _inputTime = util.formatTime(_selectedTime);
+        _inputTime = _selectedTime;
         widget.updateInputDateAndTime(inputTime: _inputTime);
       }
     });
@@ -72,7 +68,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
             Row(children: [
               Text('Date: '),
               RaisedButton(
-                child: Text(_inputDate),
+                child: Text(util.formatDate(_inputDate)),
                 color: accentColor,
                 colorBrightness: Brightness.light,
                 onPressed: () {
@@ -83,7 +79,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
             Row(children: [
               Text('Time: '),
               RaisedButton(
-                child: Text(_inputTime),
+                child: Text(util.formatTime(_inputTime)),
                 color: accentColor,
                 colorBrightness: Brightness.light,
                 onPressed: () {

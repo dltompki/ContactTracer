@@ -16,10 +16,10 @@ class AddEvent extends StatefulWidget {
 class _AddEventState extends State<AddEvent> {
   static String _inputLocation;
   static String _inputPerson;
-  static String _inputDate;
-  static String _inputTime;
+  static DateTime _inputDate;
+  static TimeOfDay _inputTime;
 
-  static void updateInputDateAndTime({String inputDate, String inputTime}) {
+  static void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
     if (inputTime != null) {
       _inputTime = inputTime;
     }

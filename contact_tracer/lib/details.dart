@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'event.dart';
+import 'utility.dart';
 
 class Details {
   BuildContext context;
   Event e;
+  Utility util = Utility();
 
   Details(BuildContext context, {Event event}) {
     this.context = context;
@@ -32,7 +34,14 @@ class Details {
     Card date = Card(
       child: ListTile(
         title: Text('Date'),
-        subtitle: Text(e.date),
+        subtitle: Text(e.formatDate),
+      ),
+    );
+
+    Card time = Card(
+      child: ListTile(
+        title: Text('Date'),
+        subtitle: Text(e.formatTime),
       ),
     );
 
@@ -52,6 +61,7 @@ class Details {
               location,
               person,
               date,
+              time,
             ],
           ),
         );
