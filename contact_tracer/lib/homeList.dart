@@ -11,17 +11,15 @@ class HomeList extends StatefulWidget {
 
 class _HomeListState extends State<HomeList> {
   List<Event> eventList = [
-    Event('London Bridge', 'The Queen', 'Tuesday'),
-    Event('Home', 'Dallas', 'Wednesday'),
-    Event('Five Guys', 'Drew', 'Thursday'),
+    Event('London Bridge', 'The Queen', 'Tuesday', '3:00 PM'),
+    Event('Home', 'Dallas', 'Wednesday', '11:59 AM'),
+    Event('Five Guys', 'Drew', 'Thursday', '7:35 PM'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text('Contact Tracer Events'),
       ),
       body: ListView(
@@ -31,7 +29,7 @@ class _HomeListState extends State<HomeList> {
         tooltip: 'Add New Event',
         child: Icon(Icons.add),
         onPressed: _pushAddEvent,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 
@@ -51,7 +49,13 @@ class _HomeListState extends State<HomeList> {
       leading: Icon(Icons.place, color: accentColor),
       title: Text(e.location),
       subtitle: Text(e.person),
-      trailing: Text(e.date),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(e.date),
+          Text(e.time),
+        ],
+      ),
       onTap: () => {_pushDetails(e)},
     );
   }
@@ -67,7 +71,12 @@ class _HomeListState extends State<HomeList> {
   }
 
   void _pushAddEvent() {
-    Navigator.of(context)
-        .push(new AddEvent(context, callback: addEventToList).getRoute());
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return new AddEvent(addEventToList);
+        },
+      ),
+    );
   }
 }

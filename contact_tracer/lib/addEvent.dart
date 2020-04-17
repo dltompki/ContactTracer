@@ -1,115 +1,118 @@
 import 'package:contact_tracer/event.dart';
-import 'package:contact_tracer/homeList.dart';
 import 'package:flutter/material.dart';
+import 'addDateAndTime.dart';
 
-class AddEvent {
-  static BuildContext context;
-  Function callback;
+class AddEvent extends StatefulWidget {
+  Function addEventToList;
 
-  static String inputLocation;
-  static String inputPerson;
-  static String inputDate;
-
-  AddEvent(BuildContext context, {Function callback}) {
-    AddEvent.context = context;
-    this.callback = callback;
+  AddEvent(Function addEventToList) {
+    this.addEventToList = addEventToList;
   }
 
-  Card location = Card(
-    child: ListTile(
-      leading: Icon(Icons.place),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Location'),
-        onChanged: (String value) {
-          inputLocation = value;
-        },
-      ),
-    ),
-  );
+  @override
+  _AddEventState createState() => _AddEventState();
+}
 
-  Card person = Card(
-    child: ListTile(
-      leading: Icon(Icons.person),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Person'),
-        onChanged: (String value) {
-          inputPerson = value;
-        },
-      ),
-    ),
-  );
+class _AddEventState extends State<AddEvent> {
+  static String _inputLocation;
+  static String _inputPerson;
+  static String _inputDate;
+  static String _inputTime;
 
-  Card date = Card(
-    child: ListTile(
-      leading: Icon(Icons.date_range),
-      title: TextField(
-        decoration: InputDecoration(labelText: 'Date'),
-        onChanged: (String value) {
-          inputDate = value;
-        },
-      ),
-    ),
-  );
-
-  MaterialPageRoute getRoute() {
-    return MaterialPageRoute(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Add Event'),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          body: ListView(
-            children: [
-              location,
-              person,
-              date,
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.check),
-            onPressed: _submitNewEvent,
-          ),
-        );
-      },
-    );
-  }
-
-  AlertDialog unfilledField = new AlertDialog(
-    title: Text('Not All Text Fields Filled'),
-    content: SingleChildScrollView(
-      child:
-          Text('Please fill out the location, person, and date of you event.'),
-    ),
-    actions: <Widget>[
-      FlatButton(
-        child: Text('Okay'),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    ],
-  );
-
-  void _submitNewEvent() {
-    if ((inputLocation != null) &&
-        (inputPerson != null) &&
-        (inputDate != null)) {
-      Event e = new Event(inputLocation, inputPerson, inputDate);
-      callback(e);
-      Navigator.pop(context);
-    } else {
-      showDialog(
-        context: context, 
-        barrierDismissible: false, // force the user to have to press okay
-        useRootNavigator: false,
-        builder: (context) {
-          return unfilledField;
-          },
-      );
+  static void updateInputDateAndTime({String inputDate, String inputTime}) {
+    if (inputTime != null) {
+      _inputTime = inputTime;
     }
+
+    if (inputDate != null) {
+      _inputDate = inputDate;
+    }
+  }
+
+  AddDateAndTime dateAndTime = new AddDateAndTime(updateInputDateAndTime);
+
+  @override
+  Widget build(BuildContext _context) {
+    Card location = Card(
+      child: ListTile(
+        leading: Icon(Icons.place),
+        title: TextField(
+          decoration: InputDecoration(labelText: 'Location'),
+          onChanged: (String value) {
+            _inputLocation = value;
+          },
+        ),
+      ),
+    );
+
+    Card person = Card(
+      child: ListTile(
+        leading: Icon(Icons.person),
+        title: TextField(
+          decoration: InputDecoration(labelText: 'Person'),
+          onChanged: (String value) {
+            _inputPerson = value;
+          },
+        ),
+      ),
+    );
+
+    void _submitNewEvent() {
+      AlertDialog unfilledField = new AlertDialog(
+        title: Text('Not All Text Fields Filled'),
+        content: SingleChildScrollView(
+          child: Text(
+              'Please fill out the location, person, and date of you event.'),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+
+      if ((_inputLocation != null) &&
+          (_inputPerson != null) &&
+          (_inputDate != null) &&
+          (_inputTime != null)) {
+        Event e =
+            new Event(_inputLocation, _inputPerson, _inputDate, _inputTime);
+        widget.addEventToList(e);
+        Navigator.pop(context);
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false, // force the user to have to press okay
+          useRootNavigator: false,
+          builder: (context) {
+            return unfilledField;
+          },
+        );
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Event'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: ListView(
+        children: [
+          location,
+          person,
+          dateAndTime,
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.check),
+        onPressed: _submitNewEvent,
+      ),
+    );
   }
 }

@@ -13,9 +13,15 @@ class ContactTracer extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
 
+        primarySwatch: Colors.blueGrey,
+
         primaryColor: primaryColor,
 
+        primaryColorBrightness: Brightness.dark,
+
         accentColor: accentColor,
+
+        accentColorBrightness: Brightness.light,
         
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
