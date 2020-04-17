@@ -1,5 +1,6 @@
 import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
+import 'addDateAndTime.dart';
 
 class AddEvent extends StatefulWidget {
   Function addEventToList;
@@ -9,40 +10,36 @@ class AddEvent extends StatefulWidget {
   }
 
   @override
-  _AddEventState createState() => _AddEventState(addEventToList);
+  _AddEventState createState() => _AddEventState();
 }
 
 class _AddEventState extends State<AddEvent> {
-  static String inputLocation;
-  static String inputPerson;
+  static String _inputLocation;
+  static String _inputPerson;
+  static String _inputDate;
+  static String _inputTime;
 
-  static TimeOfDay _selectedTime;
-  static DateTime _selectedDate;
+  static void updateInputDateAndTime({String inputDate, String inputTime}) {
+    if (inputTime != null) {
+      _inputTime = inputTime;
+    }
 
-  static String inputTime;
-  static String inputDate;
-
-  Function addEventToList;
-
-  _AddEventState(Function addEventToList) {
-    this.addEventToList = addEventToList;
+    if (inputDate != null) {
+      _inputDate = inputDate;
+    }
   }
+
+  AddDateAndTime dateAndTime = new AddDateAndTime(updateInputDateAndTime);
 
   @override
   Widget build(BuildContext _context) {
-    _selectedTime = TimeOfDay.now();
-    _selectedDate = DateTime.now();
-
-    inputDate = _selectedDate.toUtc.toString();
-    inputTime = _selectedTime.toString();
-
     Card location = Card(
       child: ListTile(
         leading: Icon(Icons.place),
         title: TextField(
           decoration: InputDecoration(labelText: 'Location'),
           onChanged: (String value) {
-            inputLocation = value;
+            _inputLocation = value;
           },
         ),
       ),
@@ -54,60 +51,11 @@ class _AddEventState extends State<AddEvent> {
         title: TextField(
           decoration: InputDecoration(labelText: 'Person'),
           onChanged: (String value) {
-            inputPerson = value;
+            _inputPerson = value;
           },
         ),
       ),
     );
-
-    void pickDateAndStore() async {
-      _selectedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now().subtract(Duration(days: 365)),
-        lastDate: DateTime.now().add(Duration(days: 365)),
-      );
-
-      inputDate = _selectedDate.toUtc().toString();
-    }
-
-    void pickTimeAndStore() async {
-      _selectedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      inputTime = _selectedTime.toString();
-    }
-
-    Card date = Card(
-      child: ListTile(
-        leading: Icon(Icons.date_range),
-        title: Column(
-          children: [
-            Row(children: [
-              Text('Date: '),
-              RaisedButton(
-                child: Text(_selectedDate.toString()),
-                onPressed: () {
-                  pickDateAndStore();
-                },
-              ),
-            ]),
-            Row(children: [
-              Text('Time: '),
-              RaisedButton(
-                child: Text(_selectedTime.format(context)),
-                onPressed: () {
-                  pickTimeAndStore();
-                },
-              ),
-            ]),
-          ],
-        ),
-      ),
-    );
-
 
     void _submitNewEvent() {
       AlertDialog unfilledField = new AlertDialog(
@@ -126,12 +74,13 @@ class _AddEventState extends State<AddEvent> {
         ],
       );
 
-      if ((inputLocation != null) &&
-          (inputPerson != null) &&
-          (inputDate != null) &&
-          (inputTime != null)) {
-        Event e = new Event(inputLocation, inputPerson, inputDate, inputTime);
-        addEventToList(e);
+      if ((_inputLocation != null) &&
+          (_inputPerson != null) &&
+          (_inputDate != null) &&
+          (_inputTime != null)) {
+        Event e =
+            new Event(_inputLocation, _inputPerson, _inputDate, _inputTime);
+        widget.addEventToList(e);
         Navigator.pop(context);
       } else {
         showDialog(
@@ -157,7 +106,7 @@ class _AddEventState extends State<AddEvent> {
         children: [
           location,
           person,
-          date,
+          dateAndTime,
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -165,17 +114,5 @@ class _AddEventState extends State<AddEvent> {
         onPressed: _submitNewEvent,
       ),
     );
-  }
-}
-
-class AddEventEx extends StatefulWidget {
-  @override
-  _AddEventExState createState() => _AddEventExState();
-}
-
-class _AddEventExState extends State<AddEventEx> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
