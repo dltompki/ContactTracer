@@ -74,7 +74,7 @@ class _HomeListState extends State<HomeList> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return new AddEvent();
+          return new AddEvent(addEventToList);
         },
       ),
     );

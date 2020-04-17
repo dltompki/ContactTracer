@@ -2,8 +2,14 @@ import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
 
 class AddEvent extends StatefulWidget {
+  Function addEventToList;
+
+  AddEvent(Function addEventToList) {
+    this.addEventToList = addEventToList;
+  }
+
   @override
-  _AddEventState createState() => _AddEventState();
+  _AddEventState createState() => _AddEventState(addEventToList);
 }
 
 class _AddEventState extends State<AddEvent> {
@@ -16,8 +22,14 @@ class _AddEventState extends State<AddEvent> {
   static String inputTime;
   static String inputDate;
 
+  Function addEventToList;
+
+  _AddEventState(Function addEventToList) {
+    this.addEventToList = addEventToList;
+  }
+
   @override
-  Widget build(BuildContext _context, {Function addEventToList}) {
+  Widget build(BuildContext _context) {
     _selectedTime = TimeOfDay.now();
     _selectedDate = DateTime.now();
 
