@@ -1,10 +1,12 @@
+import 'package:contact_tracer/contactTracer.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AddDateAndTime extends StatefulWidget {
   Function updateInputDateAndTime;
-  
+
   AddDateAndTime(Function updateInputDateAndTime) {
-    this.updateInputDateAndTime  = updateInputDateAndTime;
+    this.updateInputDateAndTime = updateInputDateAndTime;
   }
   @override
   _AddDateAndTimeState createState() => _AddDateAndTimeState();
@@ -14,8 +16,11 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
   static TimeOfDay _selectedTime;
   static DateTime _selectedDate;
 
-  static String _inputTime = TimeOfDay.now().toString();
-  static String _inputDate = DateTime.now().toUtc().toString();
+  static DateFormat myFormat = DateFormat('EEEE, M/d/y');
+  static DefaultMaterialLocalizations local = DefaultMaterialLocalizations();
+
+  static String _inputTime = local.formatTimeOfDay(TimeOfDay.now());
+  static String _inputDate = myFormat.format(DateTime.now());
 
   String get inputDate => _inputDate;
 
@@ -31,7 +36,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
 
     setState(() {
       if (_selectedDate != null) {
-        _inputDate = _selectedDate.toUtc().toString();
+        _inputDate = myFormat.format(_selectedDate);
         widget.updateInputDateAndTime(inputDate: _inputDate);
       }
     });
@@ -62,6 +67,8 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               Text('Date: '),
               RaisedButton(
                 child: Text(_inputDate),
+                color: accentColor,
+                colorBrightness: Brightness.light,
                 onPressed: () {
                   pickDateAndStore();
                 },
@@ -71,6 +78,8 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               Text('Time: '),
               RaisedButton(
                 child: Text(_inputTime),
+                color: accentColor,
+                colorBrightness: Brightness.light,
                 onPressed: () {
                   pickTimeAndStore();
                 },
