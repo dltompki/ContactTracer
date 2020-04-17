@@ -9,7 +9,7 @@ class AddDateAndTime extends StatefulWidget {
     this.updateInputDateAndTime = updateInputDateAndTime;
   }
   @override
-  _AddDateAndTimeState createState() => _AddDateAndTimeState();
+  _AddDateAndTimeState createState() => _AddDateAndTimeState(updateInputDateAndTime);
 }
 
 class _AddDateAndTimeState extends State<AddDateAndTime> {
@@ -25,6 +25,13 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
   String get inputDate => _inputDate;
 
   String get inputTime => _inputTime;
+
+  _AddDateAndTimeState(Function updateInputDateAndTime) {
+    updateInputDateAndTime(
+      inputDate: _inputDate,
+      inputTime: _inputTime,
+    );
+  }
 
   void pickDateAndStore() async {
     _selectedDate = await showDatePicker(
@@ -50,7 +57,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
 
     setState(() {
       if (_selectedTime != null) {
-        _inputTime = _selectedTime.toString();
+        _inputTime = local.formatTimeOfDay(_selectedTime);
         widget.updateInputDateAndTime(inputTime: _inputTime);
       }
     });
