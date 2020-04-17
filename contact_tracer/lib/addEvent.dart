@@ -1,10 +1,12 @@
 import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
 
-class AddEvent {
-  static BuildContext context;
-  Function callback;
+class AddEvent extends StatefulWidget {
+  @override
+  _AddEventState createState() => _AddEventState();
+}
 
+class _AddEventState extends State<AddEvent> {
   static String inputLocation;
   static String inputPerson;
 
@@ -14,18 +16,8 @@ class AddEvent {
   static String inputTime;
   static String inputDate;
 
-  // static TimeOfDay _selectedTime = TimeOfDay.now();
-  // static DateTime _selectedDate = DateTime.now();
-
-  // static String inputDate = _selectedDate.toUtc.toString();
-  // static String inputTime = _selectedTime.toString();
-
-  AddEvent(BuildContext incomingContext, {Function callback}) {
-    context = incomingContext;
-    this.callback = callback;
-  }
-
-  MaterialPageRoute getRoute() {
+  @override
+  Widget build(BuildContext _context, {Function addEventToList}) {
     _selectedTime = TimeOfDay.now();
     _selectedDate = DateTime.now();
 
@@ -56,6 +48,26 @@ class AddEvent {
       ),
     );
 
+    void pickDateAndStore() async {
+      _selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now().subtract(Duration(days: 365)),
+        lastDate: DateTime.now().add(Duration(days: 365)),
+      );
+
+      inputDate = _selectedDate.toUtc().toString();
+    }
+
+    void pickTimeAndStore() async {
+      _selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      inputTime = _selectedTime.toString();
+    }
+
     Card date = Card(
       child: ListTile(
         leading: Icon(Icons.date_range),
@@ -84,86 +96,74 @@ class AddEvent {
       ),
     );
 
-    return MaterialPageRoute(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Add Event'),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          body: ListView(
-            children: [
-              location,
-              person,
-              date,
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.check),
-            onPressed: _submitNewEvent,
-          ),
-        );
-      },
-    );
-  }
 
-  static void pickDateAndStore() async {
-    _selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 365)),
-      lastDate: DateTime.now().add(Duration(days: 365)),
-    );
-
-    inputDate = _selectedDate.toUtc().toString();
-  }
-
-  static void pickTimeAndStore() async {
-    _selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    inputTime = _selectedTime.toString();
-  }
-
-  void _submitNewEvent() {
-
-    AlertDialog unfilledField = new AlertDialog(
-      title: Text('Not All Text Fields Filled'),
-      content: SingleChildScrollView(
-        child: Text(
-            'Please fill out the location, person, and date of you event.'),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Okay'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+    void _submitNewEvent() {
+      AlertDialog unfilledField = new AlertDialog(
+        title: Text('Not All Text Fields Filled'),
+        content: SingleChildScrollView(
+          child: Text(
+              'Please fill out the location, person, and date of you event.'),
         ),
-      ],
-    );
-
-    if ((inputLocation != null) &&
-        (inputPerson != null) &&
-        (inputDate != null) &&
-        (inputTime != null)) {
-      Event e = new Event(inputLocation, inputPerson, inputDate, inputTime);
-      callback(e);
-      Navigator.pop(context);
-    } else {
-      showDialog(
-        context: context,
-        barrierDismissible: false, // force the user to have to press okay
-        useRootNavigator: false,
-        builder: (context) {
-          return unfilledField;
-        },
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
       );
+
+      if ((inputLocation != null) &&
+          (inputPerson != null) &&
+          (inputDate != null) &&
+          (inputTime != null)) {
+        Event e = new Event(inputLocation, inputPerson, inputDate, inputTime);
+        addEventToList(e);
+        Navigator.pop(context);
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false, // force the user to have to press okay
+          useRootNavigator: false,
+          builder: (context) {
+            return unfilledField;
+          },
+        );
+      }
     }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Event'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: ListView(
+        children: [
+          location,
+          person,
+          date,
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.check),
+        onPressed: _submitNewEvent,
+      ),
+    );
+  }
+}
+
+class AddEventEx extends StatefulWidget {
+  @override
+  _AddEventExState createState() => _AddEventExState();
+}
+
+class _AddEventExState extends State<AddEventEx> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
