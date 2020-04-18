@@ -15,30 +15,40 @@ class AddLocation extends StatefulWidget {
 }
 
 class _AddLocationState extends State<AddLocation> {
-  static LocationPermission perm = LocationPermission();
-  static LocationService serv = LocationService();
+  LocationPermission perm = new LocationPermission();
+  LocationService serv = new LocationService();
 
-  static final Location location = new Location();
-  static LocationData locationData;
+  final Location location = new Location();
+  LocationData locationData;
 
-  static String displayLocation;
+  String displayLocation = 'unknown';
+  String _error;
 
-  static Future<void> getLocation() async{
-    if(perm.status && serv.status) {
+  Future<void> _getLocation() async {
+    if (perm.getStatus() && serv.getStatus()) {
       locationData = await location.getLocation();
+        displayLocation = locationData.toString();
     } else {
-      displayLocation = 'Location Not Enabled';
+        displayLocation = 'Location Not Enabled';
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    getLocation();
+    _getLocation();
+    
     return Card(
       child: ListTile(
         leading: Icon(Icons.place),
         title: Text(displayLocation),
+        trailing: IconButton(
+          icon: Icon(Icons.refresh),
+          onPressed: () {
+            setState(() {
+              _getLocation();
+            });
+          },
+        ),
       ),
     );
   }

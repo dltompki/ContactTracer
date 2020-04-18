@@ -8,8 +8,7 @@ class LocationPermission {
 
   /// Updates _permsissionGranted.
   Future<void> _checkPermissions() async {
-    final PermissionStatus permissionGrantedResult =
-        await location.hasPermission();
+    PermissionStatus permissionGrantedResult = await location.hasPermission();
     _permissionGranted = permissionGrantedResult;
   }
 
@@ -26,15 +25,16 @@ class LocationPermission {
   }
 
   /// Checks if _permissionStatus is granted. If not, tries to get it.
-  /// 
+  ///
   /// Returns true if permission is granted.
   /// Return false if permission is denied or denied forever.
-  bool _getStatus() {
+  bool getStatus() {
+    _checkPermissions();
     switch (_permissionGranted) {
-      case PermissionStatus.granted :
+      case PermissionStatus.granted:
         return true;
         break;
-      case PermissionStatus.deniedForever :
+      case PermissionStatus.deniedForever:
         return false;
         break;
       default:
@@ -43,6 +43,7 @@ class LocationPermission {
   }
 
   /// Requests permission and returns true if successful.
+  /// Returns false if permission is denied after asking the user.
   bool _getPermission() {
     _checkPermissions();
     if (_permissionGranted == PermissionStatus.granted) {
@@ -56,6 +57,4 @@ class LocationPermission {
       }
     }
   }
-
-  bool get status => _getStatus();
 }
