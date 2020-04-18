@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.16.1
+  location: ^3.0.0
+
 
 
 

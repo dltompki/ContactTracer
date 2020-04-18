@@ -1,6 +1,7 @@
 import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
 import 'addDateAndTime.dart';
+import 'addLocation.dart';
 
 class AddEvent extends StatefulWidget {
   Function addEventToList;
@@ -29,22 +30,15 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
+  static void updateInputLocation(String location) {
+    _inputLocation = location;
+  }
+
   AddDateAndTime dateAndTime = new AddDateAndTime(updateInputDateAndTime);
+  AddLocation location = new AddLocation(updateInputLocation);
 
   @override
   Widget build(BuildContext _context) {
-    Card location = Card(
-      child: ListTile(
-        leading: Icon(Icons.place),
-        title: TextField(
-          decoration: InputDecoration(labelText: 'Location'),
-          onChanged: (String value) {
-            _inputLocation = value;
-          },
-        ),
-      ),
-    );
-
     Card person = Card(
       child: ListTile(
         leading: Icon(Icons.person),
