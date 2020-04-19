@@ -4,11 +4,9 @@ import 'addDateAndTime.dart';
 import 'dart:collection';
 
 class AddEvent extends StatefulWidget {
-  Function addEventToList;
+  final Function addEventToList;
 
-  AddEvent(Function addEventToList) {
-    this.addEventToList = addEventToList;
-  }
+  AddEvent(Function addEventToList) : this.addEventToList = addEventToList;
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -23,7 +21,7 @@ class _AddEventState extends State<AddEvent> {
   SplayTreeMap<String, bool> _people = new SplayTreeMap<String, bool>();
   static final String _defaultDisplayPersons = 'Person(s)';
   String _displayPersons = _defaultDisplayPersons;
-  
+
   AddDateAndTime dateAndTime;
 
   _AddEventState() {
@@ -37,8 +35,7 @@ class _AddEventState extends State<AddEvent> {
     _setDisplayPersons();
   }
 
-  void _updateInputDateAndTime(
-      {DateTime inputDate, TimeOfDay inputTime}) {
+  void _updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
     if (inputTime != null) {
       _inputTime = inputTime;
     }
@@ -54,20 +51,23 @@ class _AddEventState extends State<AddEvent> {
 
     // Build comma separated list
     _people.forEach((name, checked) {
-      if (checked)
+      if (checked) {
         _displayPersons += ((_displayPersons.length > 0) ? ', ' : '') + name;
+      }
     });
 
     // If no people are selected, use the default label
-    if (_displayPersons.length == 0)
+    if (_displayPersons.length == 0) {
       _displayPersons = _defaultDisplayPersons;
+    }
   }
 
   bool _peopleExist() {
-    _people.forEach((name, checked) {
-      if (checked)
+    for (var checked in _people.values) {
+      if (checked) {
         return true;
-    });
+      }
+    }
 
     return false;
   }
@@ -143,9 +143,14 @@ class _AddEventState extends State<AddEvent> {
           _peopleExist() &&
           (_inputDate != null) &&
           (_inputTime != null)) {
-        Event e =
-            new Event(_inputLocation, _people, _inputDate, _inputTime);
-        widget.addEventToList(e);
+        
+        _people.forEach((name, checked) {
+          if (checked) {
+            Event e = new Event(_inputLocation, name, _inputDate, _inputTime);
+            widget.addEventToList(e);
+          }
+        });
+        
         Navigator.pop(context);
       } else {
         showDialog(
