@@ -26,6 +26,8 @@ dependencies:
   intl: ^0.16.1
   location: ^3.0.0
   google_maps_flutter: ^0.5.26
+  geocoder: ^0.2.1
+
 
 
 

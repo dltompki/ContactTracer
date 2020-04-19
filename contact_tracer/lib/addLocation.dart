@@ -3,6 +3,7 @@ import 'package:location/location.dart';
 import 'locationRequirements/locationPermission.dart';
 import 'locationRequirements/locationService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoder/geocoder.dart';
 
 class AddLocation extends StatefulWidget {
   final Function updateInputLocation;
@@ -30,8 +31,9 @@ class _AddLocationState extends State<AddLocation> {
   }
 
   Set<Marker> _markers = Set<Marker>();
+  String _displayAddress = '';
 
-  Future<CameraPosition> _getCamPos() async {
+  Future<CameraPosition> _getMapInfo() async {
     LocationData locationData = await _getLocation();
 
     LatLng coords = LatLng(locationData.latitude, locationData.longitude);
@@ -47,6 +49,9 @@ class _AddLocationState extends State<AddLocation> {
       ),
     );
 
+    List<Address> addresses = await Geocoder.local.findAddressesFromCoordinates(Coordinates(coords.latitude, coords.longitude));
+    _displayAddress = addresses.first.addressLine;
+
     return CameraPosition(
       target: coords,
       zoom: 18,
@@ -56,31 +61,23 @@ class _AddLocationState extends State<AddLocation> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<CameraPosition>(
-      future: _getCamPos(),
+      future: _getMapInfo(),
       builder: (BuildContext context, AsyncSnapshot<CameraPosition> snapshot) {
         if (snapshot.hasData) {
           return Card(
             child: ListTile(
               leading: Icon(Icons.place),
-              // title: Text(snapshot.data.toString()),
-              // trailing: IconButton(
-              //   icon: Icon(Icons.refresh),
-              //   onPressed: () {
-              //     setState(() {
-              //       _getLocation();
-              //     });
-              //   },
-              // ),
               title: SizedBox(
                 height: 300,
                 width: 200,
                 child: GoogleMap(
                   initialCameraPosition: snapshot.data,
                   mapType: MapType.hybrid,
-                  myLocationEnabled: true,
+                  myLocationEnabled: false,
                   markers: _markers,
                 ),
               ),
+              subtitle: Text(_displayAddress),
             ),
           );
         } else if (snapshot.hasError) {
