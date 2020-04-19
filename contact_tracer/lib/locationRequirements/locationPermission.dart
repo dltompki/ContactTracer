@@ -28,8 +28,8 @@ class LocationPermission {
   ///
   /// Returns true if permission is granted.
   /// Return false if permission is denied or denied forever.
-  bool getStatus() {
-    _checkPermissions();
+  Future<bool> requestStatus() async {
+    await _checkPermissions();
     switch (_permissionGranted) {
       case PermissionStatus.granted:
         return true;

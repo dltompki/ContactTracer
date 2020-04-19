@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'locationRequirements/locationPermission.dart';
@@ -22,21 +24,28 @@ class _AddLocationState extends State<AddLocation> {
   LocationData locationData;
 
   String displayLocation = 'unknown';
-  String _error;
+
+  _AddLocationState() {
+    // while (displayLocation == 'unknown') {
+    //   _getLocation();
+    // }
+  }
 
   Future<void> _getLocation() async {
-    if (perm.getStatus() && serv.getStatus()) {
+    if (await perm.requestStatus() && await serv.requestStatus()) {
       locationData = await location.getLocation();
-        displayLocation = locationData.toString();
+      displayLocation = locationData.toString();
     } else {
-        displayLocation = 'Location Not Enabled';
+      displayLocation = 'Location Not Enabled';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _getLocation();
-    
+    // while (displayLocation == 'unknown') {
+      // _getLocation();
+    // }
+
     return Card(
       child: ListTile(
         leading: Icon(Icons.place),

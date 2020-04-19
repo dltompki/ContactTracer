@@ -28,6 +28,7 @@ class Event {
     return {
       'location': location,
       'person': person,
+      //'people' : people,
       'date': date.toIso8601String(),
       'hour': '${time.hour}',
       'minute': '${time.minute}',

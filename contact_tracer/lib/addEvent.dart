@@ -15,12 +15,20 @@ class AddEvent extends StatefulWidget {
 }
 
 class _AddEventState extends State<AddEvent> {
-  static String _inputLocation;
-  static String _inputPerson;
-  static DateTime _inputDate;
-  static TimeOfDay _inputTime;
+  String _inputLocation;
+  String _inputPerson;
+  DateTime _inputDate;
+  TimeOfDay _inputTime;
 
-  static void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
+  AddDateAndTime dateAndTime;
+  AddLocation location;
+
+  _AddEventState() {
+    dateAndTime = new AddDateAndTime(updateInputDateAndTime);
+    location = new AddLocation(updateInputLocation);
+  }
+
+  void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
     if (inputTime != null) {
       _inputTime = inputTime;
     }
@@ -30,12 +38,9 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
-  static void updateInputLocation(String location) {
+  void updateInputLocation(String location) {
     _inputLocation = location;
   }
-
-  AddDateAndTime dateAndTime = new AddDateAndTime(updateInputDateAndTime);
-  AddLocation location = new AddLocation(updateInputLocation);
 
   @override
   Widget build(BuildContext _context) {

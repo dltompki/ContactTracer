@@ -27,18 +27,18 @@ class LocationService {
   ///
   /// Returns true if service is enabled.
   /// Return false if service was disabled by the user after requesting it.
-  bool getStatus() {
+  Future<bool> requestStatus() async {
     if (_serviceEnabled) {
       return true;
     } else {
-      return _getService();
+      return await _getService();
     }
   }
 
   /// Requests service and returns true if successful.
   /// Returns false if after being asked, user denies enabling the service.
-  bool _getService() {
-    _checkService();
+  Future<bool> _getService() async {
+    await _checkService();
     if (_serviceEnabled) {
       return true;
     } else {
