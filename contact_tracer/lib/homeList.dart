@@ -3,7 +3,6 @@ import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
 import 'contactTracer.dart';
-import 'utility.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -16,13 +15,19 @@ class _HomeListState extends State<HomeList> {
         TimeOfDay(hour: 15, minute: 0)),
   ];
 
+  List<String> _getPeople() {
+    var people;
+    eventList.forEach((event) {
+      people.add(event.person);
+    });
+    return people;
+  }
+
   @override
   Widget build(BuildContext context) {
     void _pushDetails(Event e) {
       Navigator.of(context).push(new Details(context, event: e).getRoute());
     }
-
-    Utility util = Utility();
 
     Widget _rowFactory(Event e) {
       return ListTile(
@@ -61,7 +66,7 @@ class _HomeListState extends State<HomeList> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            return new AddEvent(addEventToList);
+            return new AddEvent(_getPeople(), addEventToList);
           },
         ),
       );
