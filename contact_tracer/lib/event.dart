@@ -6,8 +6,6 @@ class Event {
   final DateTime date;
   final TimeOfDay time;
 
-  Utility util = Utility();
-
   Event(String location, String person, DateTime date, TimeOfDay time)
       : this.location = location,
         this.person = person,
@@ -21,8 +19,8 @@ class Event {
         this.time = TimeOfDay(
             hour: int.parse(map['hour']), minute: int.parse(map['minute']));
 
-  String get formatDate => util.formatDate(date);
-  String get formatTime => util.formatTime(time);
+  String get formatDate => Utility.formatDate(date);
+  String get formatTime => Utility.formatTime(time);
 
   Map<String, dynamic> toMap() {
     return {

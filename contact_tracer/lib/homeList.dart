@@ -10,13 +10,10 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
-  List<Event> eventList = [
-    Event('London Bridge', 'The Queen', DateTime(2003, 7, 8),
-        TimeOfDay(hour: 15, minute: 0)),
-  ];
+  var eventList = List<Event>();
 
   List<String> _getPeople() {
-    var people;
+    var people = List<String>();
     eventList.forEach((event) {
       people.add(event.person);
     });

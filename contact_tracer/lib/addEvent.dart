@@ -2,6 +2,7 @@ import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
 import 'addDateAndTime.dart';
 import 'dart:collection';
+import 'utility.dart';
 
 class AddEvent extends StatefulWidget {
   final List<String> people; // current list of people in the database
@@ -17,30 +18,19 @@ class AddEvent extends StatefulWidget {
 }
 
 class _AddEventState extends State<AddEvent> {
-  // Location card and configured value
-  var _locationCard;
+  // Configured values
   var _inputLocation;
-
-  // Date/Time card and configured values
-  var _dateAndTimeCard;
   var _inputDate;
   var _inputTime;
 
-  // Person(s) card and configured value
-  // - Use a SplayTreeMap so that items are sorted by key (persons)
-  var _personsCard;
+  // Use a SplayTreeMap so that people (the key) are automatically sorted alphabetically
   var _selectedPeople = new SplayTreeMap<String, bool>();
 
   // Text that displays the currently selected people as a comma separted list
-  var _displaySelectedPeopleText;
+  var _displaySelectedPeopleText = '';
 
   // Constructor
   _AddEventState(final people) {
-    // Create cards once and reuse them every time the dialog is built
-    _locationCard = _createLocationCard();
-    _dateAndTimeCard = new AddDateAndTime(_updateInputDateAndTime);
-    _personsCard = _createPersonsCard();
-
     // Initialize list of selected people to the list currently in the
     // database and don't select any of them, since this is a new event
     _configureSelectedPeople(people, false);
@@ -110,11 +100,11 @@ class _AddEventState extends State<AddEvent> {
                 icon: Icon(Icons.add_circle_outline),
                 tooltip: 'Add person',
                 onPressed: () async {
-                  setState(() async {
-                    // Add the person to the list of selected people and
-                    // automatically select them
-                    _configureSelectedPeople(await _inputPerson(context), true);
-                  });
+                  // Add the person to the list of selected people and
+                  // automatically select them
+                  _configureSelectedPeople(
+                      List.filled(1, await _inputPerson(context)), true);
+                  setState(() {});
                 },
               ),
             ],
@@ -130,7 +120,7 @@ class _AddEventState extends State<AddEvent> {
                   onChanged: (bool checked) {
                     setState(() {
                       // Update the checkbox state and selected persons display
-                      _configureSelectedPeople(name, checked);
+                      _configureSelectedPeople(List.filled(1, name), checked);
                     });
                   },
                 );
@@ -141,7 +131,8 @@ class _AddEventState extends State<AddEvent> {
   }
 
   // Adds persons to the list of people and updates the selected persons display
-  void _configureSelectedPeople(final listOfPersons, final selected) {
+  void _configureSelectedPeople(
+      final List<String> listOfPersons, final selected) {
     if (listOfPersons.length == 0) return;
 
     // Add/update each selected persons checkbox
@@ -165,7 +156,7 @@ class _AddEventState extends State<AddEvent> {
 
     return false;
   }
-  
+
   // Configures the selected persons text field
   void _configureSelectedPersonsText() {
     // Build comma separated list
@@ -239,11 +230,14 @@ class _AddEventState extends State<AddEvent> {
         builder: (context) {
           // Default AlertDialog simply contains an OK button
           return AlertDialog(
-            title: Text('Not All Fields Configured'),
+            title: Text('Missing Information'),
             content: SingleChildScrollView(
               child: Text(
                   'Please enter the location, date/time and person(s) of your event.'),
             ),
+            actions: [
+              Utility.createOkButton(Navigator.of(context).pop),
+            ],
           );
         },
       );
@@ -271,9 +265,9 @@ class _AddEventState extends State<AddEvent> {
       ),
       body: ListView(
         children: [
-          _locationCard,
-          _dateAndTimeCard,
-          _personsCard,
+          _createLocationCard(),
+          AddDateAndTime(_updateInputDateAndTime),
+          _createPersonsCard(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
