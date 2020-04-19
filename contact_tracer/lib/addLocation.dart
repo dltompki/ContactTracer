@@ -42,9 +42,41 @@ class _AddLocationState extends State<AddLocation> {
 
   @override
   Widget build(BuildContext context) {
-    // while (displayLocation == 'unknown') {
-      // _getLocation();
-    // }
+    return FutureBuilder<LocationData>(
+      future: location.getLocation(),
+      builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot) {
+        if (snapshot.hasData) {
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.place),
+              title: Text(snapshot.data.toString()),
+              trailing: IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  setState(() {
+                    _getLocation();
+                  });
+                },
+              ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.place),
+              title: Text(snapshot.error.toString()),
+            ),
+          );
+        } else {
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.place),
+              title: CircularProgressIndicator(),
+            ),
+          );
+        }
+      },
+    );
 
     return Card(
       child: ListTile(
