@@ -1,16 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'locationRequirements/locationPermission.dart';
 import 'locationRequirements/locationService.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddLocation extends StatefulWidget {
-  Function updateInputLocation;
+  final Function updateInputLocation;
 
-  AddLocation(Function updateInputLocation) {
-    this.updateInputLocation = updateInputLocation;
-  }
+  AddLocation(Function updateInputLocation)
+      : this.updateInputLocation = updateInputLocation;
 
   @override
   _AddLocationState createState() => _AddLocationState();
@@ -25,38 +23,63 @@ class _AddLocationState extends State<AddLocation> {
 
   String displayLocation = 'unknown';
 
-  _AddLocationState() {
-    // while (displayLocation == 'unknown') {
-    //   _getLocation();
-    // }
+  Future<LocationData> _getLocation() async {
+    if (await perm.requestStatus() && await serv.requestStatus()) {
+      return await location.getLocation();
+    }
   }
 
-  Future<void> _getLocation() async {
-    if (await perm.requestStatus() && await serv.requestStatus()) {
-      locationData = await location.getLocation();
-      displayLocation = locationData.toString();
-    } else {
-      displayLocation = 'Location Not Enabled';
+  Set<Marker> _markers = Set<Marker>();
+
+  Future<CameraPosition> _getCamPos() async {
+    LocationData locationData = await _getLocation();
+
+    LatLng coords = LatLng(locationData.latitude, locationData.longitude);
+
+    if (_markers != null) {
+    _markers.clear();
     }
+
+    _markers.add(
+      Marker(
+        markerId: MarkerId('Add Event Here'),
+        position: coords,
+      ),
+    );
+
+    return CameraPosition(
+      target: coords,
+      zoom: 18,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<LocationData>(
-      future: location.getLocation(),
-      builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot) {
+    return FutureBuilder<CameraPosition>(
+      future: _getCamPos(),
+      builder: (BuildContext context, AsyncSnapshot<CameraPosition> snapshot) {
         if (snapshot.hasData) {
           return Card(
             child: ListTile(
               leading: Icon(Icons.place),
-              title: Text(snapshot.data.toString()),
-              trailing: IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: () {
-                  setState(() {
-                    _getLocation();
-                  });
-                },
+              // title: Text(snapshot.data.toString()),
+              // trailing: IconButton(
+              //   icon: Icon(Icons.refresh),
+              //   onPressed: () {
+              //     setState(() {
+              //       _getLocation();
+              //     });
+              //   },
+              // ),
+              title: SizedBox(
+                height: 300,
+                width: 200,
+                child: GoogleMap(
+                  initialCameraPosition: snapshot.data,
+                  mapType: MapType.hybrid,
+                  myLocationEnabled: true,
+                  markers: _markers,
+                ),
               ),
             ),
           );
@@ -71,26 +94,15 @@ class _AddLocationState extends State<AddLocation> {
           return Card(
             child: ListTile(
               leading: Icon(Icons.place),
-              title: CircularProgressIndicator(),
+              title: SizedBox(
+                height: 300,
+                width: 200,
+                child:CircularProgressIndicator()
+              ),
             ),
           );
         }
       },
-    );
-
-    return Card(
-      child: ListTile(
-        leading: Icon(Icons.place),
-        title: Text(displayLocation),
-        trailing: IconButton(
-          icon: Icon(Icons.refresh),
-          onPressed: () {
-            setState(() {
-              _getLocation();
-            });
-          },
-        ),
-      ),
     );
   }
 }
