@@ -4,6 +4,7 @@ import 'locationRequirements/locationPermission.dart';
 import 'locationRequirements/locationService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:search_map_place/search_map_place.dart';
 
 class AddLocation extends StatefulWidget {
   final Function updateInputLocation;
@@ -20,9 +21,12 @@ class _AddLocationState extends State<AddLocation> {
   LocationService serv = new LocationService();
 
   final Location location = new Location();
-  LocationData locationData;
+  LatLng _latLng;
+  Coordinates get _coords => _generateCoords(_latLng);
 
-  String displayLocation = 'unknown';
+  Coordinates _generateCoords(LatLng _latLng) {
+    return Coordinates(_latLng.latitude, _latLng.longitude);
+  }
 
   Future<LocationData> _getLocation() async {
     if (await perm.requestStatus() && await serv.requestStatus()) {
@@ -34,28 +38,33 @@ class _AddLocationState extends State<AddLocation> {
   String _displayAddress = '';
 
   Future<CameraPosition> _getMapInfo() async {
-    LocationData locationData = await _getLocation();
-
-    LatLng coords = LatLng(locationData.latitude, locationData.longitude);
-
-    if (_markers != null) {
-    _markers.clear();
+    if (_latLng == null) {
+      LocationData locationData = await _getLocation();
+      _latLng = LatLng(locationData.latitude, locationData.longitude);
     }
 
+    _markers.clear();
     _markers.add(
       Marker(
         markerId: MarkerId('Add Event Here'),
-        position: coords,
+        position: _latLng,
       ),
     );
 
-    List<Address> addresses = await Geocoder.local.findAddressesFromCoordinates(Coordinates(coords.latitude, coords.longitude));
+    List<Address> addresses =
+        await Geocoder.local.findAddressesFromCoordinates(_coords);
     _displayAddress = addresses.first.addressLine;
 
     return CameraPosition(
-      target: coords,
+      target: _latLng,
       zoom: 18,
     );
+  }
+
+  GoogleMapController _controller;
+
+  void _updateMap() {
+    _controller.animateCamera(CameraUpdate.newLatLng(_latLng));
   }
 
   @override
@@ -67,15 +76,33 @@ class _AddLocationState extends State<AddLocation> {
           return Card(
             child: ListTile(
               leading: Icon(Icons.place),
-              title: SizedBox(
-                height: 300,
-                width: 200,
-                child: GoogleMap(
-                  initialCameraPosition: snapshot.data,
-                  mapType: MapType.hybrid,
-                  myLocationEnabled: false,
-                  markers: _markers,
-                ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SearchMapPlaceWidget(
+                    apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
+                    onSelected: (Place _place) async {
+                      Geolocation geo = await _place.geolocation;
+                      setState(() {
+                        _latLng = geo.coordinates;
+                      });
+                      _updateMap();
+                    },
+                  ),
+                  SizedBox(
+                    height: 300,
+                    width: 200,
+                    child: GoogleMap(
+                      initialCameraPosition: snapshot.data,
+                      mapType: MapType.hybrid,
+                      myLocationEnabled: false,
+                      markers: _markers,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller = controller;
+                      },
+                    ),
+                  ),
+                ],
               ),
               subtitle: Text(_displayAddress),
             ),
@@ -92,10 +119,7 @@ class _AddLocationState extends State<AddLocation> {
             child: ListTile(
               leading: Icon(Icons.place),
               title: SizedBox(
-                height: 300,
-                width: 200,
-                child:CircularProgressIndicator()
-              ),
+                  height: 300, width: 200, child: CircularProgressIndicator()),
             ),
           );
         }
