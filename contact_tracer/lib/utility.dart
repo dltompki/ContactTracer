@@ -21,4 +21,20 @@ class Utility {
       },
     );
   }
+
+  static FlatButton createCancelButton([Function onPressed]) {
+    return FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        if (onPressed != null) onPressed();
+      },
+    );
+  }
+
+  static String appendToDelimitedString(
+      final existingString, final newString, final delimiter) {
+    return existingString +
+        ((existingString.length > 0) ? delimiter + ' ' : '') +
+        newString;
+  }
 }
