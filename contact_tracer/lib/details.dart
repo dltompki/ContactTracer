@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'event.dart';
 import 'utility.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Details {
   BuildContext context;
@@ -14,7 +15,23 @@ class Details {
 
   MaterialPageRoute getRoute() {
     Card map = Card(
-      child: Placeholder(),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: util.coordsToLatLng(e.location),
+            zoom: 18,
+          ),
+          markers: Set.from([
+            Marker(
+              markerId: MarkerId(e.locationName),
+              position: util.coordsToLatLng(e.location),
+            )
+          ]),
+          mapType: MapType.hybrid,
+        ),
+      ),
     );
 
     Card location = Card(
@@ -40,7 +57,7 @@ class Details {
 
     Card time = Card(
       child: ListTile(
-        title: Text('Date'),
+        title: Text('Time'),
         subtitle: Text(e.formatTime),
       ),
     );
