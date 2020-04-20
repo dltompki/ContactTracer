@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'utility.dart';
 
 class AddDateAndTime extends StatefulWidget {
-  Function updateInputDateAndTime;
+  final Function updateInputDateAndTime;
 
-  AddDateAndTime(Function updateInputDateAndTime) {
-    this.updateInputDateAndTime = updateInputDateAndTime;
-  }
+  AddDateAndTime(Function updateInputDateAndTime)
+      : this.updateInputDateAndTime = updateInputDateAndTime;
+
   @override
-  _AddDateAndTimeState createState() => _AddDateAndTimeState(updateInputDateAndTime);
+  _AddDateAndTimeState createState() =>
+      _AddDateAndTimeState(updateInputDateAndTime);
 }
 
 class _AddDateAndTimeState extends State<AddDateAndTime> {

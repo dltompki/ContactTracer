@@ -55,6 +55,8 @@ class _AddLocationState extends State<AddLocation> {
         await Geocoder.local.findAddressesFromCoordinates(_coords);
     _displayAddress = addresses.first.addressLine;
 
+    widget.updateInputLocation(_coords, _displayAddress);
+
     return CameraPosition(
       target: _latLng,
       zoom: 18,
@@ -79,15 +81,18 @@ class _AddLocationState extends State<AddLocation> {
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SearchMapPlaceWidget(
-                    apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
-                    onSelected: (Place _place) async {
-                      Geolocation geo = await _place.geolocation;
-                      setState(() {
-                        _latLng = geo.coordinates;
-                      });
-                      _updateMap();
-                    },
+                  Container(
+                    child: SearchMapPlaceWidget(
+                      apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
+                      onSelected: (Place _place) async {
+                        Geolocation geo = await _place.geolocation;
+                        setState(() {
+                          _latLng = geo.coordinates;
+                        });
+                        _updateMap();
+                      },
+                    ),
+                    padding: EdgeInsets.only(bottom: 8),
                   ),
                   SizedBox(
                     height: 300,

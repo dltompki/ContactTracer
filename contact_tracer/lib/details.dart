@@ -20,7 +20,7 @@ class Details {
     Card location = Card(
       child: ListTile(
         title: Text('Location'),
-        subtitle: Text(e.location),
+        subtitle: Text(e.locationName), //TODO add map view
       ),
     );
 

@@ -1,21 +1,21 @@
 import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/model.dart';
 import 'addDateAndTime.dart';
 import 'addLocation.dart';
 
 class AddEvent extends StatefulWidget {
-  Function addEventToList;
+  final Function addEventToList;
 
-  AddEvent(Function addEventToList) {
-    this.addEventToList = addEventToList;
-  }
+  AddEvent(Function addEventToList) : this.addEventToList = addEventToList;
 
   @override
   _AddEventState createState() => _AddEventState();
 }
 
 class _AddEventState extends State<AddEvent> {
-  String _inputLocation;
+  Coordinates _inputLocation;
+  String _inputLocationName;
   String _inputPerson;
   DateTime _inputDate;
   TimeOfDay _inputTime;
@@ -38,8 +38,9 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
-  void updateInputLocation(String location) {
+  void updateInputLocation(Coordinates location, String locationName) {
     _inputLocation = location;
+    _inputLocationName = locationName;
   }
 
   @override
@@ -77,8 +78,8 @@ class _AddEventState extends State<AddEvent> {
           (_inputPerson != null) &&
           (_inputDate != null) &&
           (_inputTime != null)) {
-        Event e =
-            new Event(_inputLocation, _inputPerson, _inputDate, _inputTime);
+        Event e = new Event(_inputLocation, _inputLocationName, _inputPerson,
+            _inputDate, _inputTime);
         widget.addEventToList(e);
         Navigator.pop(context);
       } else {

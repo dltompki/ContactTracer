@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geocoder/model.dart';
 import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
 import 'contactTracer.dart';
-import 'utility.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -12,8 +12,8 @@ class HomeList extends StatefulWidget {
 
 class _HomeListState extends State<HomeList> {
   List<Event> eventList = [
-    Event('London Bridge', 'The Queen', DateTime(2003, 7, 8),
-        TimeOfDay(hour: 15, minute: 0)),
+    Event(Coordinates(51.5079, 0.0877), 'London Bridge', 'The Queen',
+        DateTime(2003, 7, 8), TimeOfDay(hour: 15, minute: 0)),
   ];
 
   @override
@@ -22,12 +22,10 @@ class _HomeListState extends State<HomeList> {
       Navigator.of(context).push(new Details(context, event: e).getRoute());
     }
 
-    Utility util = Utility();
-
     Widget _rowFactory(Event e) {
       return ListTile(
         leading: Icon(Icons.place, color: accentColor),
-        title: Text(e.location),
+        title: Text(e.locationName),
         subtitle: Text(e.person),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
