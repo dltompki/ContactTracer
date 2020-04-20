@@ -143,7 +143,9 @@ class _AddEventState extends State<AddEvent> {
         // Add people one at a time to avoid duplicates
         e.persons.split(_personDelimiter).forEach((name) {
           // Only add if not already in the list
-          if (!_displaySelectedPeopleText.toLowerCase().contains(name.toLowerCase())) {
+          if (!_displaySelectedPeopleText
+              .toLowerCase()
+              .contains(name.toLowerCase())) {
             _displaySelectedPeopleText = Utility.appendToDelimitedString(
                 _displaySelectedPeopleText, name, _personDelimiter);
           }
@@ -360,56 +362,58 @@ class _AddEventState extends State<AddEvent> {
   // Creates the persons card
   Card _createPersonsCard() {
     return Card(
-      child: Column(
-        // Configure widgets to consume minimum amount of vertical space
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          // First row contains the list of currently selected persons
-          // and a button to add a new person
-          Row(
-            children: <Widget>[
-              // Displays list of currently selected persons
-              Expanded(
-                child: ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text(_displaySelectedPeopleText),
+      child: Container(
+        // Allow card to scroll up enough so that floating check button
+        // is not in the way of the last selectable Person(s) enrty
+        padding: EdgeInsets.only(bottom: 100),
+        child: Column(
+          children: <Widget>[
+            // First row contains the list of currently selected persons
+            // and a button to add a new person
+            Row(
+              children: <Widget>[
+                // Displays list of currently selected persons
+                Expanded(
+                  child: ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(_displaySelectedPeopleText),
+                  ),
                 ),
-              ),
-              // Button to add a new person
-              IconButton(
-                icon: Icon(Icons.add_circle_outline),
-                tooltip: 'Add person',
-                onPressed: () async {
-                  // Add the person to the list of selected people and
-                  // automatically select them
-                  final persons = await _inputPersonDialog(context);
-                  if (persons != null) {
-                    _configureSelectedPeople(List.filled(1, persons), true);
-                    setState(() {});
-                  }
-                },
-              ),
-            ],
-          ),
-          // Subsequent rows are a list of people from which those that
-          // participate in the event can be selected
-          new ListView(
-              shrinkWrap: true,
-              children: _selectedPeople.keys.map((String name) {
-                return new CheckboxListTile(
-                  title: new Text(_getSelectedPeopleEntry(name).persons),
-                  value: _getSelectedPeopleEntry(name).selected,
-                  onChanged: (bool checked) {
-                    setState(() {
-                      // Update the checkbox state and selected persons display
-                      _configureSelectedPeople(
-                          List.filled(1, _getSelectedPeopleEntry(name).persons),
-                          checked);
-                    });
+                // Button to add a new person
+                IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  tooltip: 'Add person',
+                  onPressed: () async {
+                    // Add the person to the list of selected people and
+                    // automatically select them
+                    final persons = await _inputPersonDialog(context);
+                    if (persons != null) {
+                      _configureSelectedPeople(List.filled(1, persons), true);
+                      setState(() {});
+                    }
                   },
-                );
-              }).toList()),
-        ],
+                ),
+              ],
+            ),
+            // Subsequent rows are a list of people from which those that
+            // participate in the event can be selected
+            new Column(
+                children: _selectedPeople.keys.map((String name) {
+              return new CheckboxListTile(
+                title: new Text(_getSelectedPeopleEntry(name).persons),
+                value: _getSelectedPeopleEntry(name).selected,
+                onChanged: (bool checked) {
+                  setState(() {
+                    // Update the checkbox state and selected persons display
+                    _configureSelectedPeople(
+                        List.filled(1, _getSelectedPeopleEntry(name).persons),
+                        checked);
+                  });
+                },
+              );
+            }).toList()),
+          ],
+        ),
       ),
     );
   }
