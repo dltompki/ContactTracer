@@ -16,6 +16,7 @@ class Details {
   MaterialPageRoute getRoute() {
     Card map = Card(
       child: Container(
+        padding: EdgeInsets.all(8),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.width,
         child: GoogleMap(

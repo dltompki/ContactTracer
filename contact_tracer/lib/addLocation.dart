@@ -1,3 +1,4 @@
+import 'package:contact_tracer/contactTracer.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'locationRequirements/locationPermission.dart';
@@ -76,40 +77,50 @@ class _AddLocationState extends State<AddLocation> {
       builder: (BuildContext context, AsyncSnapshot<CameraPosition> snapshot) {
         if (snapshot.hasData) {
           return Card(
-            child: ListTile(
-              leading: Icon(Icons.place),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    child: SearchMapPlaceWidget(
-                      apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
-                      onSelected: (Place _place) async {
-                        Geolocation geo = await _place.geolocation;
-                        setState(() {
-                          _latLng = geo.coordinates;
-                        });
-                        _updateMap();
-                      },
-                    ),
-                    padding: EdgeInsets.only(bottom: 8),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.place),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        child: SearchMapPlaceWidget(
+                          darkMode: true,
+                          iconColor: accentColor,
+                          apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
+                          onSelected: (Place _place) async {
+                            Geolocation geo = await _place.geolocation;
+                            setState(() {
+                              _latLng = geo.coordinates;
+                            });
+                            _updateMap();
+                          },
+                        ),
+                        padding: EdgeInsets.only(bottom: 0, top: 4),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 300,
-                    width: 200,
-                    child: GoogleMap(
-                      initialCameraPosition: snapshot.data,
-                      mapType: MapType.hybrid,
-                      myLocationEnabled: false,
-                      markers: _markers,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller = controller;
-                      },
-                    ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(8),
+                  child: GoogleMap(
+                    initialCameraPosition: snapshot.data,
+                    mapType: MapType.hybrid,
+                    myLocationEnabled: false,
+                    markers: _markers,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller = controller;
+                    },
                   ),
-                ],
-              ),
-              subtitle: Text(_displayAddress),
+                ),
+                Container(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text(_displayAddress),
+                ),
+              ],
             ),
           );
         } else if (snapshot.hasError) {
