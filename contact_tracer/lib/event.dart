@@ -11,6 +11,7 @@ class Event {
 
   Utility util = Utility();
 
+  /// Default contruction for when event is created by the user
   Event(Coordinates location, String locationName, String person, DateTime date, TimeOfDay time)
       : this.location = location,
         this.person = person,
@@ -18,6 +19,7 @@ class Event {
         this.time = time,
         this.locationName = locationName;
 
+  /// Parsing constructor for importing from the database accoring to the format established by [toMap]
   Event.parse(Map<String, dynamic> map)
       : this.location = map['location'],
         this.person = map['person'],
@@ -29,6 +31,7 @@ class Event {
   String get formatDate => util.formatDate(date);
   String get formatTime => util.formatTime(time);
 
+  /// Export this [Event] as a [Map<String, dynamic>] to enter it into the database
   Map<String, dynamic> toMap() {
     return {
       'location': location,

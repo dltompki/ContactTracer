@@ -14,14 +14,21 @@ class AddDateAndTime extends StatefulWidget {
 }
 
 class _AddDateAndTimeState extends State<AddDateAndTime> {
+  /// These variables allow the output of the date and time pickers to be read before updating the 
+  /// [_inputDate] and [_inputTime], because if the user cancels the pick, the picker returns
+  /// [null], and we don't want to submit either [_inputDate] or [_inputTime] as [null].
   static TimeOfDay _selectedTime;
   static DateTime _selectedDate;
 
   static Utility util = Utility();
 
+  /// These variables are sent through the callback function [updateInputDateAndTime] backt o [AddEvent].
   static TimeOfDay _inputTime = TimeOfDay.now();
   static DateTime _inputDate = DateTime.now();
 
+  /// Updates [AddEvent] with the current date and time so if the user wants to input the current moment,
+  /// they don't even have to use the date or time pickers. This is also more intuitive because it is
+  /// representative of the information being diaplyed to the user on the date and time buttons.
   _AddDateAndTimeState(Function updateInputDateAndTime) {
     updateInputDateAndTime(
       inputDate: _inputDate,
@@ -29,6 +36,9 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
     );
   }
 
+  /// Calls [showDatePicker] with the current date being the default.
+  /// If the user chooses a date and submits, the [_inputDate] is updated accordingly.
+  /// If the user cancels, the date picker returns [null] and the [_inputDate] is not updated.
   void pickDateAndStore() async {
     _selectedDate = await showDatePicker(
       context: context,
@@ -45,6 +55,9 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
     });
   }
 
+  /// Calls [showTimePicker] with the current time being the default.
+  /// If the user chooses a time and submits, the [_inputTime] is updated accordingly.
+  /// If the user cancels, the time picker returns [null] and the [_inputTime] is not updated.
   void pickTimeAndStore() async {
     _selectedTime = await showTimePicker(
       context: context,
@@ -71,7 +84,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               RaisedButton(
                 child: Text(util.formatDate(_inputDate)),
                 color: accentColor,
-                colorBrightness: Brightness.light,
+                colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
                 onPressed: () {
                   pickDateAndStore();
                 },
@@ -82,7 +95,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               RaisedButton(
                 child: Text(util.formatTime(_inputTime)),
                 color: accentColor,
-                colorBrightness: Brightness.light,
+                colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
                 onPressed: () {
                   pickTimeAndStore();
                 },

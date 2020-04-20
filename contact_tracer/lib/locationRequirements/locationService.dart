@@ -5,7 +5,7 @@ class LocationService {
 
   bool _serviceEnabled = false;
 
-  /// Updates _serviceEnabled with current state.
+  /// Updates [_serviceEnabled] with current state.
   Future<void> _checkService() async {
     final bool serviceEnabledResult = await location.serviceEnabled();
     _serviceEnabled = serviceEnabledResult;
@@ -22,7 +22,7 @@ class LocationService {
     }
   }
 
-  /// Checks if _serviceEnabled is enabled. If not, tries to get it.
+  /// Checks if [_serviceEnabled] is enabled. If not, tries to get it.
   ///
   /// Returns true if service is enabled.
   /// Return false if service was disabled by the user after requesting it.

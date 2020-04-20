@@ -14,6 +14,7 @@ class AddEvent extends StatefulWidget {
 }
 
 class _AddEventState extends State<AddEvent> {
+  /// This group of variables are what the [Event] that is being sent back to [HomeList] are constructed with
   Coordinates _inputLocation;
   String _inputLocationName;
   String _inputPerson;
@@ -23,11 +24,13 @@ class _AddEventState extends State<AddEvent> {
   AddDateAndTime dateAndTime;
   AddLocation location;
 
+  /// Initializes the [AddDateAndTime] widget and the [AddLocation] widget
   _AddEventState() {
     dateAndTime = new AddDateAndTime(updateInputDateAndTime);
     location = new AddLocation(updateInputLocation);
   }
 
+  /// Callback function passed to [AddDateAndTime] that allows any combination of [inputDate] and [inputTime] to be updated in the [AddEvent] widget
   void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
     if (inputTime != null) {
       _inputTime = inputTime;
@@ -38,6 +41,7 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
+  /// Callback function passed to [AddLocation] that allows the [location] and [locationName] to be updated
   void updateInputLocation(Coordinates location, String locationName) {
     _inputLocation = location;
     _inputLocationName = locationName;
@@ -45,6 +49,7 @@ class _AddEventState extends State<AddEvent> {
 
   @override
   Widget build(BuildContext _context) {
+    /// Allows user to enter a string for the [inputPerson] parameter of the [Event]
     Card person = Card(
       child: ListTile(
         leading: Icon(Icons.person),
@@ -57,7 +62,9 @@ class _AddEventState extends State<AddEvent> {
       ),
     );
 
+    /// Called when the user indicates they are finished filling out the [AddEvent] form by clicking the [FloatingActionButton]
     void _submitNewEvent() {
+      /// Pops up when the user attempts to submit but they haven't filled out all the properties
       AlertDialog unfilledField = new AlertDialog(
         title: Text('Not All Text Fields Filled'),
         content: SingleChildScrollView(
@@ -74,6 +81,7 @@ class _AddEventState extends State<AddEvent> {
         ],
       );
 
+      /// Uses the callback function [addEventToList] if all the properites have been filled out. Otherwise, pops up [unfilledField]
       if ((_inputLocation != null) &&
           (_inputPerson != null) &&
           (_inputDate != null) &&

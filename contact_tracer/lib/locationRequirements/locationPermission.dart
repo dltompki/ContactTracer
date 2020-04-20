@@ -5,13 +5,13 @@ class LocationPermission {
 
   PermissionStatus _permissionGranted;
 
-  /// Updates _permsissionGranted.
+  /// Updates [_permsissionGranted].
   Future<void> _checkPermissions() async {
     PermissionStatus permissionGrantedResult = await location.hasPermission();
     _permissionGranted = permissionGrantedResult;
   }
 
-  /// Attempts to get the user to enable location user for the app.
+  /// Attempts to get the user to enable location use for the app.
   Future<void> _requestPermission() async {
     if (_permissionGranted != PermissionStatus.granted) {
       final PermissionStatus permissionRequestedResult =
@@ -23,7 +23,7 @@ class LocationPermission {
     }
   }
 
-  /// Checks if _permissionStatus is granted. If not, tries to get it.
+  /// Checks if [_permissionStatus] is granted. If not, tries to get it.
   ///
   /// Returns true if permission is granted.
   /// Return false if permission is denied or denied forever.
