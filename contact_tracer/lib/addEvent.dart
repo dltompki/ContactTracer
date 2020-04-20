@@ -17,6 +17,15 @@ class AddEvent extends StatefulWidget {
   _AddEventState createState() => _AddEventState(people);
 }
 
+class _SelectedPeople {
+  String persons;
+  bool selected;
+
+  _SelectedPeople(final persons, final selected)
+      : this.persons = persons,
+        this.selected = selected;
+}
+
 class _AddEventState extends State<AddEvent> {
   // Delimiter between multiple people
   static final _personDelimiter = ',';
@@ -27,15 +36,14 @@ class _AddEventState extends State<AddEvent> {
   var _inputTime;
 
   // Use a SplayTreeMap so that people (the key) are automatically sorted alphabetically
-
-  var _selectedPeople =
-      new SplayTreeMap<String, bool>((a, b) => _sortSelectedPeople(a, b));
+  var _selectedPeople = new SplayTreeMap<String, _SelectedPeople>(
+      (a, b) => _sortSelectedPeople(a, b));
 
   // Text that displays the currently selected people as a comma separted list
   var _displaySelectedPeopleText = '';
 
   // The result of the input person dialog
-  var _inputPerson;
+  var _inputPersons;
 
   // Constructor
   _AddEventState(final people) {
@@ -73,23 +81,40 @@ class _AddEventState extends State<AddEvent> {
   // Prevent duplicate entries in the selected people list where
   // the only difference between them is capitalization
   String _normalizeSelectedPeopleKey(final key) {
-    return key.toLowerCase();
+    return key.toLowerCase().trim();
   }
 
   // Retrieve the requested selected people entry
-  bool _getSelectedPeopleEntry(final persons) {
+  _SelectedPeople _getSelectedPeopleEntry(final persons) {
     return _selectedPeople[_normalizeSelectedPeopleKey(persons)];
   }
 
   // Configure the specified selected people entry
-  void _setSelectedPeopleEntry(final persons, final checked) {
-    _selectedPeople[_normalizeSelectedPeopleKey(persons)] = checked;
+  void _setSelectedPeopleEntry(final persons, final selected) {
+    final key = _normalizeSelectedPeopleKey(persons);
+
+    // If an entry already exists, only change its selected state
+    if (_selectedPeople.containsKey(key)) {
+      _selectedPeople[key].selected = selected;
+    } else {
+      _selectedPeople[key] = _SelectedPeople(persons, selected);
+    }
+  }
+
+  void _updateSelectedPeopleEntrySelectedState(final entry, final selected) {
+    // We must use the update() method when iterating, which
+    // means we must make a copy of the existing entry in
+    // order to modify it
+    var updatedEntry = entry;
+    updatedEntry.selected = selected;
+    _selectedPeople.update(
+        _normalizeSelectedPeopleKey(entry.persons), (value) => updatedEntry);
   }
 
   // Indicates if any people have been selected
   bool _peopleSelected() {
-    for (var checked in _selectedPeople.values) {
-      if (checked) {
+    for (var e in _selectedPeople.values) {
+      if (e.selected) {
         return true;
       }
     }
@@ -102,37 +127,33 @@ class _AddEventState extends State<AddEvent> {
   static int _sortSelectedPeople(final a, final b) {
     var aListSize = a.split(_personDelimiter).length;
     var bListSize = b.split(_personDelimiter).length;
-    if (aListSize != bListSize) return aListSize.compareTo(bListSize);
+    // if (aListSize != bListSize) return aListSize.compareTo(bListSize);
+    if (aListSize != bListSize) return (bListSize - aListSize);
 
     return a.compareTo(b);
   }
 
   // Configures the selected persons text field
-  void _configureSelectedPersonsText() {
+  void _configureSelectedPersonsText(final selected) {
     // Build comma separated list
     _displaySelectedPeopleText = '';
-    _selectedPeople.forEach((persons, checked) {
+    for (var e in _selectedPeople.values) {
       // Only add the persons if they are selected (checked)
-      if (checked) {
+      if (e.selected) {
         // Add people one at a time to avoid duplicates
-        persons.split(_personDelimiter).forEach((name) {
+        e.persons.split(_personDelimiter).forEach((name) {
           // Only add if not already in the list
-          if (!_displaySelectedPeopleText.contains(name)) {
+          if (!_displaySelectedPeopleText.toLowerCase().contains(name.toLowerCase())) {
             _displaySelectedPeopleText = Utility.appendToDelimitedString(
                 _displaySelectedPeopleText, name, _personDelimiter);
           }
         });
       }
-    });
+    }
 
     // If no people are selected, configure a default label
     if (_displaySelectedPeopleText.length == 0) {
       _displaySelectedPeopleText = 'Person(s)';
-    }
-    // Otherwise, synchronize the matching group entry, if it exists
-    else if (_selectedPeople
-        .containsKey(_normalizeSelectedPeopleKey(_displaySelectedPeopleText))) {
-      _setSelectedPeopleEntry(_displaySelectedPeopleText, true);
     }
   }
 
@@ -155,7 +176,8 @@ class _AddEventState extends State<AddEvent> {
         // end up with the same group of people in different orders
         var alphabeticalPersons = persons;
         if (personList.length > 1) {
-          personList.sort();
+          // Compare entries in all lowercase to avoid impacts of different capitalization
+          personList.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
           alphabeticalPersons = '';
           personList.forEach((person) {
@@ -166,33 +188,85 @@ class _AddEventState extends State<AddEvent> {
         }
 
         // Synchronize entries
-        for (var selectedPersons in _selectedPeople.keys) {
-          if (selected
-              ? (alphabeticalPersons.contains(selectedPersons))
-              : (selectedPersons.contains(alphabeticalPersons))) {
-            _selectedPeople.update(_normalizeSelectedPeopleKey(selectedPersons),
-                (value) => selected);
-          }
+        if (selected) {
+          synchronizeSelectedEntries();
+        } else {
+          synchronizeDeselectedEntries(alphabeticalPersons);
         }
       }
     });
 
     // Configure the selected persons text field
-    _configureSelectedPersonsText();
+    _configureSelectedPersonsText(selected);
   }
 
+  // Synchronize all entries to the currently configured selected set
+  void synchronizeSelectedEntries() {
+    // Obtain the keys of all the individual selected entries
+    // - Use a set to avoid duplicates when processing groups
+    var individualSelectedKeys = Set<String>();
+    for (var selectedPeopleData in _selectedPeople.values) {
+      if (selectedPeopleData.selected) {
+        selectedPeopleData.persons.split(_personDelimiter).forEach((person) {
+          individualSelectedKeys.add(_normalizeSelectedPeopleKey(person));
+        });
+      }
+    }
+
+    // Iterate over all entries, selecting those whose persons are
+    // entirely within the selected set
+    for (var currentEntry in _selectedPeople.values) {
+      var update = true;
+      for (final person in currentEntry.persons.split(_personDelimiter)) {
+        if (!individualSelectedKeys
+            .contains(_normalizeSelectedPeopleKey(person))) {
+          update = false;
+          break;
+        }
+      }
+
+      if (update) {
+        _updateSelectedPeopleEntrySelectedState(currentEntry, true);
+      }
+    }
+  }
+
+  // Synchronize all entries to the currently configured selected set
+  void synchronizeDeselectedEntries(final deselectedPersons) {
+    final normalizedDeselectedPersons =
+        _normalizeSelectedPeopleKey(deselectedPersons);
+
+    // Iterate over all entries, deselecting those that contain any
+    // person in the deselected key
+    for (var currentEntry in _selectedPeople.values) {
+      var update = false;
+      for (final person in currentEntry.persons.split(_personDelimiter)) {
+        if (normalizedDeselectedPersons
+            .contains(_normalizeSelectedPeopleKey(person))) {
+          update = true;
+          break;
+        }
+      }
+
+      if (update) {
+        _updateSelectedPeopleEntrySelectedState(currentEntry, false);
+      }
+    }
+  }
+
+  // Simply return to the previous dialog
   void _inputPersonDialogDismiss([final result]) {
     Navigator.of(context).pop(result);
   }
 
-  // Return the name of the inputted person to the previous widget
+  // Return the name of the inputted person to the previous dialog
   void _inputPersonDialogAccept() {
-    _inputPersonDialogDismiss(_inputPerson);
+    _inputPersonDialogDismiss(_inputPersons);
   }
 
   // Alows the user to input a new person
   Future<String> _inputPersonDialog(BuildContext context) async {
-    _inputPerson = '';
+    _inputPersons = '';
 
     return showDialog<String>(
       context: context,
@@ -206,12 +280,12 @@ class _AddEventState extends State<AddEvent> {
                   child: new TextField(
                 autofocus: true,
                 decoration: new InputDecoration(labelText: 'Person'),
-                onSubmitted: (name) {
+                onSubmitted: (persons) {
                   // No need to consume name since it is processed in onChanged
                   _inputPersonDialogAccept();
                 },
-                onChanged: (value) {
-                  _inputPerson = value;
+                onChanged: (persons) {
+                  _inputPersons = persons;
                 },
               ))
             ],
@@ -308,9 +382,9 @@ class _AddEventState extends State<AddEvent> {
                 onPressed: () async {
                   // Add the person to the list of selected people and
                   // automatically select them
-                  final person = await _inputPersonDialog(context);
-                  if (person != null) {
-                    _configureSelectedPeople(List.filled(1, person), true);
+                  final persons = await _inputPersonDialog(context);
+                  if (persons != null) {
+                    _configureSelectedPeople(List.filled(1, persons), true);
                     setState(() {});
                   }
                 },
@@ -323,12 +397,14 @@ class _AddEventState extends State<AddEvent> {
               shrinkWrap: true,
               children: _selectedPeople.keys.map((String name) {
                 return new CheckboxListTile(
-                  title: new Text(name),
-                  value: _getSelectedPeopleEntry(name),
+                  title: new Text(_getSelectedPeopleEntry(name).persons),
+                  value: _getSelectedPeopleEntry(name).selected,
                   onChanged: (bool checked) {
                     setState(() {
                       // Update the checkbox state and selected persons display
-                      _configureSelectedPeople(List.filled(1, name), checked);
+                      _configureSelectedPeople(
+                          List.filled(1, _getSelectedPeopleEntry(name).persons),
+                          checked);
                     });
                   },
                 );
