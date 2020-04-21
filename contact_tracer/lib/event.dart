@@ -28,8 +28,8 @@ class Event {
             hour: int.parse(map['hour']), minute: int.parse(map['minute'])),
         this.locationName = map['locationName'];
 
-  String get formatDate => util.formatDate(date);
-  String get formatTime => util.formatTime(time);
+  String get formatDate => Utility.formatDate(date);
+  String get formatTime => Utility.formatTime(time);
 
   /// Export this [Event] as a [Map<String, dynamic>] to enter it into the database
   Map<String, dynamic> toMap() {

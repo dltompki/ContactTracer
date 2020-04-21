@@ -82,7 +82,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
             Row(children: [
               Text('Date: '),
               RaisedButton(
-                child: Text(util.formatDate(_inputDate)),
+                child: Text(Utility.formatDate(_inputDate)),
                 color: accentColor,
                 colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
                 onPressed: () {
@@ -93,7 +93,7 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
             Row(children: [
               Text('Time: '),
               RaisedButton(
-                child: Text(util.formatTime(_inputTime)),
+                child: Text(Utility.formatTime(_inputTime)),
                 color: accentColor,
                 colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
                 onPressed: () {

@@ -17,6 +17,14 @@ class _HomeListState extends State<HomeList> {
         DateTime(2003, 7, 8), TimeOfDay(hour: 15, minute: 0)),
   ];
 
+  List<String> _getPeople() {
+    var people = List<String>();
+    eventList.forEach((event) {
+      people.add(event.person);
+    });
+    return people;
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Opens the [Details] screen for the [Event] that was clicked on
