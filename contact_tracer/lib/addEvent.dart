@@ -1,25 +1,37 @@
 import 'package:contact_tracer/event.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/model.dart';
 import 'addDateAndTime.dart';
+import 'addLocation.dart';
 
 class AddEvent extends StatefulWidget {
-  Function addEventToList;
+  final Function addEventToList;
 
-  AddEvent(Function addEventToList) {
-    this.addEventToList = addEventToList;
-  }
+  AddEvent(Function addEventToList) : this.addEventToList = addEventToList;
 
   @override
   _AddEventState createState() => _AddEventState();
 }
 
 class _AddEventState extends State<AddEvent> {
-  static String _inputLocation;
-  static String _inputPerson;
-  static DateTime _inputDate;
-  static TimeOfDay _inputTime;
+  /// This group of variables are what the [Event] that is being sent back to [HomeList] are constructed with
+  Coordinates _inputLocation;
+  String _inputLocationName;
+  String _inputPerson;
+  DateTime _inputDate;
+  TimeOfDay _inputTime;
 
-  static void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
+  AddDateAndTime dateAndTime;
+  AddLocation location;
+
+  /// Initializes the [AddDateAndTime] widget and the [AddLocation] widget
+  _AddEventState() {
+    dateAndTime = new AddDateAndTime(updateInputDateAndTime);
+    location = new AddLocation(updateInputLocation);
+  }
+
+  /// Callback function passed to [AddDateAndTime] that allows any combination of [inputDate] and [inputTime] to be updated in the [AddEvent] widget
+  void updateInputDateAndTime({DateTime inputDate, TimeOfDay inputTime}) {
     if (inputTime != null) {
       _inputTime = inputTime;
     }
@@ -29,22 +41,15 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
-  AddDateAndTime dateAndTime = new AddDateAndTime(updateInputDateAndTime);
+  /// Callback function passed to [AddLocation] that allows the [location] and [locationName] to be updated
+  void updateInputLocation(Coordinates location, String locationName) {
+    _inputLocation = location;
+    _inputLocationName = locationName;
+  }
 
   @override
   Widget build(BuildContext _context) {
-    Card location = Card(
-      child: ListTile(
-        leading: Icon(Icons.place),
-        title: TextField(
-          decoration: InputDecoration(labelText: 'Location'),
-          onChanged: (String value) {
-            _inputLocation = value;
-          },
-        ),
-      ),
-    );
-
+    /// Allows user to enter a string for the [inputPerson] parameter of the [Event]
     Card person = Card(
       child: ListTile(
         leading: Icon(Icons.person),
@@ -57,7 +62,9 @@ class _AddEventState extends State<AddEvent> {
       ),
     );
 
+    /// Called when the user indicates they are finished filling out the [AddEvent] form by clicking the [FloatingActionButton]
     void _submitNewEvent() {
+      /// Pops up when the user attempts to submit but they haven't filled out all the properties
       AlertDialog unfilledField = new AlertDialog(
         title: Text('Not All Text Fields Filled'),
         content: SingleChildScrollView(
@@ -74,12 +81,13 @@ class _AddEventState extends State<AddEvent> {
         ],
       );
 
+      /// Uses the callback function [addEventToList] if all the properites have been filled out. Otherwise, pops up [unfilledField]
       if ((_inputLocation != null) &&
           (_inputPerson != null) &&
           (_inputDate != null) &&
           (_inputTime != null)) {
-        Event e =
-            new Event(_inputLocation, _inputPerson, _inputDate, _inputTime);
+        Event e = new Event(_inputLocation, _inputLocationName, _inputPerson,
+            _inputDate, _inputTime);
         widget.addEventToList(e);
         Navigator.pop(context);
       } else {
