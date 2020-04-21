@@ -90,14 +90,22 @@ class _HomeListState extends State<HomeList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Contact Tracer Events'),
+        actions: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8),
+            child: RaisedButton(
+              onPressed: _pushAddEvent,
+              color: accentColor,
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView(
         children: _buildRows(eventList),
-      ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Add New Event',
-        child: Icon(Icons.add),
-        onPressed: _pushAddEvent,
       ),
     );
   }
