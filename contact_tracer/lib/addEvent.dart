@@ -11,7 +11,7 @@ class AddEvent extends StatefulWidget {
   final Function
       addEventToList; // callback function excuted when event is submitted by user
 
-  AddEvent(final people, final Function addEventToList)
+  AddEvent({final List<String> people, final Function addEventToList})
       : this.people = people,
         this.addEventToList = addEventToList;
 
@@ -351,25 +351,10 @@ class _AddEventState extends State<AddEvent> {
 
     // Add the event to the database
     widget.addEventToList(Event(
-        _inputLocation, _displaySelectedPeopleText, _inputDate, _inputTime));
+        _inputLocation, _inputLocationName, _displaySelectedPeopleText, _inputDate, _inputTime));
 
     // Return to the previous screen
     Navigator.pop(context);
-  }
-
-  // Creates the location card
-  Card _createLocationCard() {
-    return Card(
-      child: ListTile(
-        leading: Icon(Icons.place),
-        title: TextField(
-          decoration: InputDecoration(labelText: 'Location'),
-          onChanged: (String value) {
-            _inputLocation = value;
-          },
-        ),
-      ),
-    );
   }
 
   // Creates the persons card
@@ -483,8 +468,8 @@ class _AddEventState extends State<AddEvent> {
       ),
       body: ListView(
         children: [
-          _createLocationCard(),
-          AddDateAndTime(_updateInputDateAndTime),
+          location,
+          dateAndTime,
           _createPersonsCard(),
         ],
       ),
