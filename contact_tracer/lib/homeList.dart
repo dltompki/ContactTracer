@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoder/model.dart';
 import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
@@ -10,64 +11,102 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
+  /// Default [eventList] for testing
   List<Event> eventList = [
-    Event('London Bridge', 'The Queen', 'Tuesday'),
-    Event('Home', 'Dallas', 'Wednesday'),
-    Event('Five Guys', 'Drew', 'Thursday'),
+    Event(Coordinates(51.5079, 0.0877), 'London Bridge', 'The Queen',
+        DateTime(2003, 7, 8), TimeOfDay(hour: 15, minute: 0)),
   ];
+
+  List<String> _getPeople() {
+    var people = List<String>();
+    eventList.forEach((event) {
+      people.add(event.person);
+    });
+    return people;
+  }
 
   @override
   Widget build(BuildContext context) {
+    /// Opens the [Details] screen for the [Event] that was clicked on
+    void _pushDetails(Event e) {
+      Navigator.of(context).push(new Details(
+        context,
+        event: e,
+      ).getRoute());
+    }
+
+    /// Callback function passed to the [AddEvent] screen to enable it to send events back to the [eventList]
+    void addEventToList(Event e) {
+      setState(() {
+        eventList.add(e);
+      });
+    }
+
+    /// Opens the [AddEvent] screen, passing the [addEventToList] function to enable [Event]s to be sent back to the [HomeList]
+    void _pushAddEvent() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return new AddEvent(
+              people: _getPeople(),
+              addEventToList: addEventToList,
+            );
+          },
+        ),
+      );
+    }
+
+    /// Builds a single [ListTile] for the [Event] passed in according to consistent formatting for [HomeList]
+    Widget _rowFactory(Event e) {
+      return ListTile(
+        leading: Icon(Icons.place, color: accentColor),
+        title: Text(e.locationName),
+        subtitle: Text(e.person),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(e.formatDate),
+            Text(e.formatTime),
+          ],
+        ),
+        onTap: () => {_pushDetails(e)},
+      );
+    }
+
+    /// Calls [_rowFactory] for every [Event] in the [List<Event>] to build the entire list of formatted [ListTile]s
+    List<Widget> _buildRows(List<Event> eList) {
+      List<Widget> rows = [];
+
+      for (var e in eList) {
+        rows.add(_rowFactory(e));
+        rows.add(Divider());
+
+        /// spacer between each [ListTile]
+      }
+
+      return rows;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text('Contact Tracer Events'),
+        actions: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8),
+            child: RaisedButton(
+              onPressed: _pushAddEvent,
+              color: accentColor,
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView(
         children: _buildRows(eventList),
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Add New Event',
-        child: Icon(Icons.add),
-        onPressed: _pushAddEvent,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  List<Widget> _buildRows(List<Event> eList) {
-    List<Widget> rows = [];
-
-    for (var e in eList) {
-      rows.add(_rowFactory(e));
-      rows.add(Divider());
-    }
-
-    return rows;
-  }
-
-  Widget _rowFactory(Event e) {
-    return ListTile(
-      leading: Icon(Icons.place, color: accentColor),
-      title: Text(e.location),
-      subtitle: Text(e.person),
-      trailing: Text(e.date),
-      onTap: () => {_pushDetails(e)},
-    );
-  }
-
-  void _pushDetails(Event e) {
-    Navigator.of(context).push(new Details(context, event: e).getRoute());
-  }
-
-  void addEventToList(Event e) {
-    setState(() {
-      eventList.add(e);
-    });
-  }
-
-  void _pushAddEvent() {
-    Navigator.of(context)
-        .push(new AddEvent(context, callback: addEventToList).getRoute());
   }
 }

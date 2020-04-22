@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "412665538965",
+    "firebase_url": "https://contact-tracer-5314e.firebaseio.com",
+    "project_id": "contact-tracer-5314e",
+    "storage_bucket": "contact-tracer-5314e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412665538965:android:b3d6b3579fb6082bb2ae9c",
+        "android_client_info": {
+          "package_name": "com.example.contact_tracer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412665538965-novt2e8u19lda4pe8l4ofk4ero2q3v9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.contact_tracer",
+            "certificate_hash": "21b05bf3e59e398c6798e02e3074bd0797d511a1"
+          }
+        },
+        {
+          "client_id": "412665538965-1g2luv9f7kr6rdf87crral76acn46gog.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk-5wd_Os6OeWaPO3emDefhO88VUFZ4LI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412665538965-1g2luv9f7kr6rdf87crral76acn46gog.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,11 +11,17 @@ class ContactTracer extends StatelessWidget {
     return MaterialApp(
       title: 'Contact Tracer',
       theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.dark, /// Overall app brightness
+
+        primarySwatch: Colors.blueGrey, /// Helps with the widgets inheriting app colors
 
         primaryColor: primaryColor,
 
+        primaryColorBrightness: Brightness.dark, /// Makes [Text] that appears on top [light]
+
         accentColor: accentColor,
+
+        accentColorBrightness: Brightness.light, /// Makes [Text] that appears on top [dark]
         
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
