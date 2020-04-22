@@ -1,5 +1,6 @@
 import 'package:contact_tracer/contactTracer.dart';
 import 'package:contact_tracer/utility.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'locationRequirements/locationPermission.dart';
@@ -83,6 +84,24 @@ class _AddLocationState extends State<AddLocation> {
     _controller.animateCamera(CameraUpdate.newLatLng(_latLng));
   }
 
+  Future<RemoteConfig> setupRemoteConfig() async {
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    // Enable developer mode to relax fetch throttling
+    remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: true));
+
+    try {
+      await remoteConfig.fetch(expiration: const Duration(hours: 12));
+      await remoteConfig.activateFetched();
+    } on FetchThrottledException catch (exception) {
+      print(exception);
+    } catch (exception) {
+      print('Unable to fetch remote config. Cached or default values will be '
+          'used');
+    }
+
+    return remoteConfig;
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Waits for the [CameraPosition] to be retuned. Shows a [CircularProgressIndicator] while waiting.
@@ -98,20 +117,31 @@ class _AddLocationState extends State<AddLocation> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        child: SearchMapPlaceWidget(
-                          darkMode: true,
-                          iconColor: accentColor,
-                          apiKey: 'AIzaSyCraW0yH_H7YW0BdD5a4-56_TxFrzN5jNA',
-                          onSelected: (Place _place) async {
-                            Geolocation geo = await _place.geolocation;
-                            setState(() {
-                              _latLng = geo.coordinates;
-                            });
-                            _updateMap();
-                          },
-                        ),
-                        padding: EdgeInsets.only(bottom: 0, top: 4),
+                      FutureBuilder<RemoteConfig>(
+                        future: setupRemoteConfig(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<RemoteConfig> remoteConfig) {
+                          if (remoteConfig.hasData) {
+                            return Container(
+                              child: SearchMapPlaceWidget(
+                                darkMode: true,
+                                iconColor: accentColor,
+                                apiKey: remoteConfig.data
+                                    .getString('google_maps_key'),
+                                onSelected: (Place _place) async {
+                                  Geolocation geo = await _place.geolocation;
+                                  setState(() {
+                                    _latLng = geo.coordinates;
+                                  });
+                                  _updateMap();
+                                },
+                              ),
+                              padding: EdgeInsets.only(bottom: 0, top: 4),
+                            );
+                          } else {
+                            return LinearProgressIndicator();
+                          }
+                        },
                       ),
                     ],
                   ),
