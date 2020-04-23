@@ -1,3 +1,4 @@
+import 'package:contact_tracer/utility.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'event.dart';
@@ -20,7 +21,7 @@ class _HomeListState extends State<HomeList> {
   List<String> _getPeople() {
     var people = List<String>();
     eventList.forEach((event) {
-      people.add(event.person);
+      people.add(event.formattedPeople);
     });
     return people;
   }
@@ -61,7 +62,7 @@ class _HomeListState extends State<HomeList> {
       return ListTile(
         leading: Icon(Icons.place, color: accentColor),
         title: Text(e.locationName),
-        subtitle: Text(e.person),
+        subtitle: Text(e.formattedPeople),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
