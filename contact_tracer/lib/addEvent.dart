@@ -8,6 +8,9 @@ import 'utility.dart';
 import 'addLocation.dart';
 
 class AddEvent extends StatefulWidget {
+  // Delimiter between multiple people
+  static final personDelimiter = ',';
+
   final List<String> people; // current list of people in the database
   final Function
       addEventToList; // callback function excuted when event is submitted by user
@@ -30,9 +33,6 @@ class _SelectedPeople {
 }
 
 class _AddEventState extends State<AddEvent> {
-  // Delimiter between multiple people
-  static final _personDelimiter = ',';
-
   /// This group of variables are what the [Event] that is being sent back to [HomeList] are constructed with
   Coordinates _inputLocation;
   String _inputLocationName;
@@ -141,8 +141,8 @@ class _AddEventState extends State<AddEvent> {
   // Sorts the selected people, first based on the number of people
   // in the entry and then alphabetically
   static int _sortSelectedPeople(final a, final b) {
-    var aListSize = a.split(_personDelimiter).length;
-    var bListSize = b.split(_personDelimiter).length;
+    var aListSize = a.split(AddEvent.personDelimiter).length;
+    var bListSize = b.split(AddEvent.personDelimiter).length;
     // if (aListSize != bListSize) return aListSize.compareTo(bListSize);
     if (aListSize != bListSize) return (bListSize - aListSize);
 
@@ -157,13 +157,13 @@ class _AddEventState extends State<AddEvent> {
       // Only add the persons if they are selected (checked)
       if (e.selected) {
         // Add people one at a time to avoid duplicates
-        e.persons.split(_personDelimiter).forEach((name) {
+        e.persons.split(AddEvent.personDelimiter).forEach((name) {
           // Only add if not already in the list
           if (!_displaySelectedPeopleText
               .toLowerCase()
               .contains(name.toLowerCase())) {
             _displaySelectedPeopleText = Utility.appendToDelimitedString(
-                _displaySelectedPeopleText, name, _personDelimiter);
+                _displaySelectedPeopleText, name, AddEvent.personDelimiter);
           }
         });
       }
@@ -184,7 +184,7 @@ class _AddEventState extends State<AddEvent> {
       persons = persons.trim();
       if (persons.length > 0) {
         // If persons is a group of people, add each person individually
-        var personList = persons.split(_personDelimiter);
+        var personList = persons.split(AddEvent.personDelimiter);
         for (var i = 0; i < personList.length; ++i) {
           personList[i] = personList[i].trim();
           _setSelectedPeopleEntry(personList[i], selected);
@@ -200,7 +200,7 @@ class _AddEventState extends State<AddEvent> {
           alphabeticalPersons = '';
           personList.forEach((person) {
             alphabeticalPersons = Utility.appendToDelimitedString(
-                alphabeticalPersons, person, _personDelimiter);
+                alphabeticalPersons, person, AddEvent.personDelimiter);
           });
           _setSelectedPeopleEntry(alphabeticalPersons, selected);
         }
@@ -225,7 +225,7 @@ class _AddEventState extends State<AddEvent> {
     var individualSelectedKeys = Set<String>();
     for (var selectedPeopleData in _selectedPeople.values) {
       if (selectedPeopleData.selected) {
-        selectedPeopleData.persons.split(_personDelimiter).forEach((person) {
+        selectedPeopleData.persons.split(AddEvent.personDelimiter).forEach((person) {
           individualSelectedKeys.add(_normalizeSelectedPeopleKey(person));
         });
       }
@@ -235,7 +235,7 @@ class _AddEventState extends State<AddEvent> {
     // entirely within the selected set
     for (var currentEntry in _selectedPeople.values) {
       var update = true;
-      for (final person in currentEntry.persons.split(_personDelimiter)) {
+      for (final person in currentEntry.persons.split(AddEvent.personDelimiter)) {
         if (!individualSelectedKeys
             .contains(_normalizeSelectedPeopleKey(person))) {
           update = false;
@@ -258,7 +258,7 @@ class _AddEventState extends State<AddEvent> {
     // person in the deselected key
     for (var currentEntry in _selectedPeople.values) {
       var update = false;
-      for (final person in currentEntry.persons.split(_personDelimiter)) {
+      for (final person in currentEntry.persons.split(AddEvent.personDelimiter)) {
         if (normalizedDeselectedPersons
             .contains(_normalizeSelectedPeopleKey(person))) {
           update = true;
@@ -416,46 +416,6 @@ class _AddEventState extends State<AddEvent> {
 
   @override
   Widget build(BuildContext context) {
-    /// Called when the user indicates they are finished filling out the [AddEvent] form by clicking the [FloatingActionButton]
-    void _submitNewEvent() {
-      /// Pops up when the user attempts to submit but they haven't filled out all the properties
-      AlertDialog unfilledField = new AlertDialog(
-        title: Text('Not All Text Fields Filled'),
-        content: SingleChildScrollView(
-          child: Text(
-              'Please fill out the location, person, and date of you event.'),
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Okay'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-
-      /// Uses the callback function [addEventToList] if all the properites have been filled out. Otherwise, pops up [unfilledField]
-      if ((_inputLocation != null) &&
-          (_inputPerson != null) &&
-          (_inputDate != null) &&
-          (_inputTime != null)) {
-        Event e = new Event(_inputLocation, _inputLocationName, _inputPerson,
-            _inputDate, _inputTime);
-        widget.addEventToList(e);
-        Navigator.pop(context);
-      } else {
-        showDialog(
-          context: context,
-          barrierDismissible: false, // force the user to have to press okay
-          useRootNavigator: false,
-          builder: (context) {
-            return unfilledField;
-          },
-        );
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Event'),
