@@ -39,20 +39,21 @@ class Event {
   String get formatTime => Utility.formatTime(time);
 
   /// Export this [Event] as a [Map<String, dynamic>] to enter it into the database
-  // List<Map<String, dynamic>> toMaps() {
-
-  //   List<Map<String, dynamic>> output = [];
-  //   people.forEach((person) {
-  //     output.add({
-  //     'latitude': location.latitude,
-  //     'longitude' : location.longitude,
-  //     'locationName' : locationName,
-  //     'people': displayPeople, /// TODO this also isn't right
-  //     'person' : person,
-  //     'date': date.toIso8601String(),
-  //     'hour': time.hour,
-  //     'minute': time.minute,
-  //     });
-  //   });
-  // }
+  List<Map<String, dynamic>> toMaps() {
+    int id = DateTime.now().microsecondsSinceEpoch;
+    List<Map<String, dynamic>> output = [];
+    people.forEach((person) {
+      output.add({
+        'id' : id,
+        'latitude': location.latitude,
+        'longitude' : location.longitude,
+        'locationName' : locationName,
+        'people': formattedPeople,
+        'person' : person,
+        'date': date.toIso8601String(),
+        'hour': time.hour,
+        'minute': time.minute,
+      });
+    });
+  }
 }
