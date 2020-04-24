@@ -29,13 +29,7 @@ dependencies:
   geocoder: ^0.2.1
   search_map_place: ^0.3.0
   firebase_remote_config: ^0.3.0+3
-
-
-
-
-
-
-
+  sqflite: ^1.3.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3

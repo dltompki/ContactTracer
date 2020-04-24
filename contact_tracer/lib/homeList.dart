@@ -5,6 +5,7 @@ import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
 import 'contactTracer.dart';
+import 'eventDatabase.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -17,6 +18,8 @@ class _HomeListState extends State<HomeList> {
     Event(Coordinates(51.5079, 0.0877), 'London Bridge', 'The Queen',
         DateTime(2003, 7, 8), TimeOfDay(hour: 15, minute: 0)),
   ];
+
+  EventDatabase db = new EventDatabase();
 
   List<String> _getPeople() {
     var people = List<String>();
@@ -37,7 +40,12 @@ class _HomeListState extends State<HomeList> {
     }
 
     /// Callback function passed to the [AddEvent] screen to enable it to send events back to the [eventList]
-    void addEventToList(Event e) {
+    void addEventToDatabase(Event e) {
+      List<Map<String, dynamic>> maps = e.toMaps();
+      maps.forEach((map) {
+        db.insertEvent(map);
+      });
+
       setState(() {
         eventList.add(e);
       });
@@ -50,7 +58,7 @@ class _HomeListState extends State<HomeList> {
           builder: (context) {
             return new AddEvent(
               people: _getPeople(),
-              addEventToList: addEventToList,
+              addEventToDatabase: addEventToDatabase,
             );
           },
         ),

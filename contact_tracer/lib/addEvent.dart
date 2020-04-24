@@ -13,11 +13,11 @@ class AddEvent extends StatefulWidget {
 
   final List<String> people; // current list of people in the database
   final Function
-      addEventToList; // callback function excuted when event is submitted by user
+      addEventToDatabase; // callback function excuted when event is submitted by user
 
-  AddEvent({final List<String> people, final Function addEventToList})
+  AddEvent({final List<String> people, final Function addEventToDatabase})
       : this.people = people,
-        this.addEventToList = addEventToList;
+        this.addEventToDatabase = addEventToDatabase;
 
   @override
   _AddEventState createState() => _AddEventState(people);
@@ -353,7 +353,7 @@ class _AddEventState extends State<AddEvent> {
     }
 
     // Add the event to the database
-    widget.addEventToList(Event(_inputLocation, _inputLocationName,
+    widget.addEventToDatabase(Event(_inputLocation, _inputLocationName,
         _displaySelectedPeopleText, _inputDate, _inputTime));
 
     // Return to the previous screen

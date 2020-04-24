@@ -55,5 +55,6 @@ class Event {
         'minute': time.minute,
       });
     });
+    return output;
   }
 }
