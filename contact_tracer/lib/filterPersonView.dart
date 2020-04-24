@@ -155,9 +155,13 @@ class _FilterPersonViewState extends State<FilterPersonView> {
                   child: FutureBuilder(
                     future: db.getEventsByPeople(_deriveSelectedPeople()),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
                       return Column(
                         children: Utility.buildRows(context, snapshot.data),
-                      );
+                      ); }
+                      else {
+                        return Loading();
+                      }
                     },
                   ),
                 ),
