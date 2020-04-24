@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'eventDatabase.dart';
+import 'utility.dart';
+import 'homeList.dart';
+import 'event.dart';
+import 'mapView.dart';
 
 class FilterPersonView extends StatefulWidget {
   @override
@@ -6,7 +11,64 @@ class FilterPersonView extends StatefulWidget {
 }
 
 class _FilterPersonViewState extends State<FilterPersonView> {
-  List<String> selectedPeople = [];
+  List<String> _selectedPeople = [];
+
+  EventDatabase db = new EventDatabase();
+  List<String> allPeople;
+
+  Map<String, bool> people = {};
+
+  HomeList homeList = new HomeList();
+
+  bool isExpanded = true;
+
+  void _deriveCheckboxMap() {
+    allPeople.forEach((person) {
+      people.addEntries([MapEntry(person, false)]);
+    });
+  }
+
+  CheckboxListTile _checkboxFactory(String key, int id) {
+    return CheckboxListTile(
+      title: Text(key),
+      value: people.values.elementAt(id),
+      onChanged: (newValue) {
+        setState(() {
+          people.update(key, (value) => newValue);
+        });
+      },
+    );
+  }
+
+  List<CheckboxListTile> _buildCheckboxes() {
+    if (people.length == 0) {
+      _deriveCheckboxMap();
+    }
+
+    List<CheckboxListTile> _output = [];
+
+    for (var i = 0; i < people.length; i++) {
+      _output.add(_checkboxFactory(people.keys.elementAt(i), i));
+    }
+
+    return _output;
+  }
+
+  List<String> _deriveSelectedPeople() {
+    List<String> output = [];
+
+    if (people.length == 0) {
+      _deriveCheckboxMap();
+    }
+
+    people.forEach((key, value) {
+      if (value == true) {
+        output.add(key);
+      }
+    });
+
+    return output;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,29 +82,95 @@ class _FilterPersonViewState extends State<FilterPersonView> {
         ),
         title: Text('Filter By Person'),
       ),
-      body: Column(
-        children: [
-          Card(
-            child: ExpansionPanelList(
+      body: FutureBuilder(
+        future: db.getAllPeople(),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<String>> allPeopleData) {
+          if (allPeopleData.hasData) {
+            allPeople = allPeopleData.data;
+
+            return ListView(
               children: [
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    if (selectedPeople.length > 0) {
-                      // TODO build formatted title using utility function dad made
-                    } else {
-                      return Text('Select Person(s)');
-                    }
-                  },
-                  // body: , // TODO checklist based on map derived from all people passed in
-                  canTapOnHeader: true,
+                Card(
+                  child: ExpansionPanelList(
+                    expansionCallback: (id, state) {
+                      setState(() {
+                        isExpanded = !state;
+                      });
+                    },
+                    children: [
+                      ExpansionPanel(
+                        headerBuilder: (BuildContext context, bool isExpanded) {
+                          if (_selectedPeople.length > 0) {
+                            String _displaySelectedPeople;
+                            for (var i = 0; i < _selectedPeople.length; i++) {
+                              if (i == 0) {
+                                _displaySelectedPeople = _selectedPeople[0];
+                              } else {
+                                Utility.appendToDelimitedString(
+                                    _displaySelectedPeople,
+                                    _selectedPeople[i],
+                                    ',');
+                              }
+                            }
+                            return Container(
+                              padding: EdgeInsets.only(left: 10, top: 15),
+                              child: Text(_displaySelectedPeople),
+                            );
+                          } else {
+                            return Container(
+                              padding: EdgeInsets.only(left: 10, top: 15),
+                              child: Text('Select Person(s)'),
+                            );
+                          }
+                        },
+                        body: Column(
+                          children: _buildCheckboxes(),
+                        ),
+                        canTapOnHeader: true,
+                        isExpanded: isExpanded,
+                      ),
+                    ],
+                  ),
+                ),
+                // Card(
+                //   child: Container(
+                //     child: FutureBuilder(
+                //     future: db.getEventsByPeople(_deriveSelectedPeople()),
+                //     builder: (BuildContext context,
+                //         AsyncSnapshot<List<Event>> eventListData) {
+                //       if (eventListData.hasData) {
+                //         return Column(
+                //           children:
+                //               Utility.buildRows(context, eventListData.data),
+                //         );
+                //       } else {
+                //         return Text('test');
+                //       }
+                //     },
+                //   ),
+                //   ), 
+                // ),
+                Card(
+                  child: FutureBuilder(
+                    future: db.getEventsByPeople(_deriveSelectedPeople()),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      return Column(
+                        children: Utility.buildRows(context, snapshot.data),
+                      );
+                    },
+                  ),
                 ),
               ],
-            ),
-          ),
-          Card(
-            child: FutureBuilder(builder: null), // TODO query database using selected people list to build a listview of events
-          ),
-        ],
+            );
+          } else {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
+              child: Loading(),
+            );
+          }
+        },
       ),
     );
   }
