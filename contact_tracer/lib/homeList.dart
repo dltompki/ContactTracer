@@ -110,7 +110,7 @@ class _HomeListState extends State<HomeList> {
     }
 
     return FutureBuilder(
-      future: db.getAllEvents(),
+      future: db.getFilteredEvents(),
       builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
         if (snapshot.hasData) {
           return Scaffold(

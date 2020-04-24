@@ -33,7 +33,7 @@ class _FilterPersonViewState extends State<FilterPersonView> {
                       return Text('Select Person(s)');
                     }
                   },
-                  body: , // TODO checklist based on map derived from all people passed in
+                  // body: , // TODO checklist based on map derived from all people passed in
                   canTapOnHeader: true,
                 ),
               ],

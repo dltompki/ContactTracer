@@ -42,7 +42,7 @@ class EventDatabase {
     );
   }
 
-  Future<List<Event>> getAllEvents() async {
+  Future<List<Event>> getUnfilteredEvents() async {
     /// Get database refrence
     final Database db = await database;
 
@@ -54,13 +54,21 @@ class EventDatabase {
       return Event.parse(maps[index]);
     });
 
+    return unfilteredEvents;
+  }
+
+  Future<List<Event>> getFilteredEvents() async {
+    /// Get all events from database
+    List<Event> unfilteredEvents = await getUnfilteredEvents();
+
     /// Define list of events we will return
     List<Event> filteredEvents = [];
+
     /// Define list of ids that have already been entered into the filteredEvents list
     List<int> ids = [];
-    
+
     unfilteredEvents.forEach((e) {
-      if(!ids.contains(e.id)) {
+      if (!ids.contains(e.id)) {
         ids.add(e.id);
         filteredEvents.add(e);
       }
@@ -70,6 +78,10 @@ class EventDatabase {
   }
 
   Future<List<String>> getAllPeople() async {
-    return ['','',];
+    /// Get database refrence
+    final db = await database;
+
+    /// Get all the maps in the events table
+    final List<Map<String, dynamic>> maps = await db.query('events');
   }
 }
