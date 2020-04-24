@@ -14,7 +14,7 @@ class AddDateAndTime extends StatefulWidget {
 }
 
 class _AddDateAndTimeState extends State<AddDateAndTime> {
-  /// These variables allow the output of the date and time pickers to be read before updating the 
+  /// These variables allow the output of the date and time pickers to be read before updating the
   /// [_inputDate] and [_inputTime], because if the user cancels the pick, the picker returns
   /// [null], and we don't want to submit either [_inputDate] or [_inputTime] as [null].
   static TimeOfDay _selectedTime;
@@ -76,7 +76,10 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(Icons.date_range),
+        leading: Icon(
+          Icons.date_range,
+          color: accentColor,
+        ),
         title: Column(
           children: [
             Row(children: [
@@ -84,7 +87,9 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               RaisedButton(
                 child: Text(Utility.formatDate(_inputDate)),
                 color: accentColor,
-                colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
+                colorBrightness: Brightness.light,
+
+                /// Makes the [Text] on top dark, so its readable
                 onPressed: () {
                   pickDateAndStore();
                 },
@@ -95,7 +100,9 @@ class _AddDateAndTimeState extends State<AddDateAndTime> {
               RaisedButton(
                 child: Text(Utility.formatTime(_inputTime)),
                 color: accentColor,
-                colorBrightness: Brightness.light, /// Makes the [Text] on top dark, so its readable
+                colorBrightness: Brightness.light,
+
+                /// Makes the [Text] on top dark, so its readable
                 onPressed: () {
                   pickTimeAndStore();
                 },

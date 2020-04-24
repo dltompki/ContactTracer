@@ -42,7 +42,7 @@ class EventDatabase {
     );
   }
 
-  Future<List<Event>> getHomelistData() async {
+  Future<List<Event>> getAllEvents() async {
     /// Get database refrence
     final Database db = await database;
 

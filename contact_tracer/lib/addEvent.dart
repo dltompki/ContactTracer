@@ -372,7 +372,7 @@ class _AddEventState extends State<AddEvent> {
               // Displays list of currently selected persons
               Expanded(
                 child: ListTile(
-                  leading: Icon(Icons.person),
+                  leading: Icon(Icons.person, color: accentColor,),
                   title: Text(_displaySelectedPeopleText),
                 ),
               ),

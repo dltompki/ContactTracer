@@ -113,7 +113,10 @@ class _AddLocationState extends State<AddLocation> {
             child: Column(
               children: [
                 ListTile(
-                  leading: Icon(Icons.place),
+                  leading: Icon(
+                    Icons.place,
+                    color: accentColor,
+                  ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -170,8 +173,16 @@ class _AddLocationState extends State<AddLocation> {
         } else if (snapshot.hasError) {
           return Card(
             child: ListTile(
-              leading: Icon(Icons.place),
-              title: Text(snapshot.error.toString()),
+              leading: Icon(
+                Icons.place,
+                color: accentColor,
+              ),
+              title: RaisedButton(
+                onPressed: () {
+                  setState(() {});
+                },
+                child: Text('Load Location')
+              ),
             ),
           );
         } else {

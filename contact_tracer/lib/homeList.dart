@@ -1,11 +1,10 @@
-import 'package:contact_tracer/utility.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoder/model.dart';
 import 'event.dart';
 import 'details.dart';
 import 'addEvent.dart';
 import 'contactTracer.dart';
 import 'eventDatabase.dart';
+import 'mapView.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -56,6 +55,17 @@ class _HomeListState extends State<HomeList> {
       );
     }
 
+    /// Opens the [MapView] screen
+    void _pushMapView() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return new MapView();
+          },
+        ),
+      );
+    }
+
     /// Builds a single [ListTile] for the [Event] passed in according to consistent formatting for [HomeList]
     Widget _rowFactory(Event e) {
       return ListTile(
@@ -88,7 +98,7 @@ class _HomeListState extends State<HomeList> {
     }
 
     return FutureBuilder(
-      future: db.getHomelistData(),
+      future: db.getAllEvents(),
       builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
@@ -113,6 +123,26 @@ class _HomeListState extends State<HomeList> {
             body: ListView(
               children: _buildRows(snapshot.data),
             ),
+            drawer: Drawer(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: Text("Contact Tracer"),
+                    subtitle: Text("An App By Dylan Tompkins"),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.map),
+                      title: Text("Map View"),
+                      onTap: _pushMapView,
+                    ),
+                    color: primaryColor,
+                  ),
+                ],
+              ),
+            ),
+            drawerScrimColor: accentColor.withOpacity(0.5),
+            drawerEnableOpenDragGesture: true,
           );
         } else {
           return Scaffold(
