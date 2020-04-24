@@ -68,4 +68,8 @@ class EventDatabase {
 
     return filteredEvents;
   }
+
+  Future<List<String>> getAllPeople() async {
+    return ['','',];
+  }
 }

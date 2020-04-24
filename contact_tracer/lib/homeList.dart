@@ -5,6 +5,7 @@ import 'addEvent.dart';
 import 'contactTracer.dart';
 import 'eventDatabase.dart';
 import 'mapView.dart';
+import 'filterPersonView.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -61,6 +62,17 @@ class _HomeListState extends State<HomeList> {
         MaterialPageRoute(
           builder: (context) {
             return new MapView();
+          },
+        ),
+      );
+    }
+
+    /// Opens the [FilterPersonView] screen
+    void _pushFilterPersonView() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return new FilterPersonView();
           },
         ),
       );
@@ -135,6 +147,14 @@ class _HomeListState extends State<HomeList> {
                       leading: Icon(Icons.map),
                       title: Text("Map View"),
                       onTap: _pushMapView,
+                    ),
+                    color: primaryColor,
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text("Filter By Person"),
+                      onLongPress: _pushFilterPersonView,
                     ),
                     color: primaryColor,
                   ),
