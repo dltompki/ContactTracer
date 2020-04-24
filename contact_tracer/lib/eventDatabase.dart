@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'event.dart';
 
 class EventDatabase {
   final Future<Database> database;
@@ -39,5 +40,32 @@ class EventDatabase {
       'events',
       event,
     );
+  }
+
+  Future<List<Event>> getHomelistData() async {
+    /// Get database refrence
+    final Database db = await database;
+
+    /// Get all the maps in the events table
+    final List<Map<String, dynamic>> maps = await db.query('events');
+
+    /// Parse maps into events
+    final List<Event> unfilteredEvents = List.generate(maps.length, (index) {
+      return Event.parse(maps[index]);
+    });
+
+    /// Define list of events we will return
+    List<Event> filteredEvents = [];
+    /// Define list of ids that have already been entered into the filteredEvents list
+    List<int> ids = [];
+    
+    unfilteredEvents.forEach((e) {
+      if(!ids.contains(e.id)) {
+        ids.add(e.id);
+        filteredEvents.add(e);
+      }
+    });
+
+    return filteredEvents;
   }
 }

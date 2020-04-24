@@ -13,15 +13,9 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
-  /// Default [eventList] for testing
-  List<Event> eventList = [
-    Event(Coordinates(51.5079, 0.0877), 'London Bridge', 'The Queen',
-        DateTime(2003, 7, 8), TimeOfDay(hour: 15, minute: 0)),
-  ];
-
   EventDatabase db = new EventDatabase();
 
-  List<String> _getPeople() {
+  List<String> _getPeople(List<Event> eventList) {
     var people = List<String>();
     eventList.forEach((event) {
       people.add(event.formattedPeople);
@@ -45,19 +39,16 @@ class _HomeListState extends State<HomeList> {
       maps.forEach((map) {
         db.insertEvent(map);
       });
-
-      setState(() {
-        eventList.add(e);
-      });
+      setState(() {});
     }
 
     /// Opens the [AddEvent] screen, passing the [addEventToList] function to enable [Event]s to be sent back to the [HomeList]
-    void _pushAddEvent() {
+    void _pushAddEvent(List<Event> eventList) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
             return new AddEvent(
-              people: _getPeople(),
+              people: _getPeople(eventList),
               addEventToDatabase: addEventToDatabase,
             );
           },
@@ -96,26 +87,42 @@ class _HomeListState extends State<HomeList> {
       return rows;
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Contact Tracer Events'),
-        actions: <Widget>[
-          Container(
-            padding: EdgeInsets.all(8),
-            child: RaisedButton(
-              onPressed: _pushAddEvent,
-              color: accentColor,
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
-              ),
+    return FutureBuilder(
+      future: db.getHomelistData(),
+      builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Contact Tracer Events'),
+              actions: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: RaisedButton(
+                    onPressed: () {
+                      _pushAddEvent(snapshot.data);
+                    },
+                    color: accentColor,
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      body: ListView(
-        children: _buildRows(eventList),
-      ),
+            body: ListView(
+              children: _buildRows(snapshot.data),
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Contact Tracer Events'),
+            ),
+            body: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

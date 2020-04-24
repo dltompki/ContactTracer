@@ -10,30 +10,35 @@ class Event {
   final TimeOfDay time;
   final Coordinates location;
   final String locationName;
+  int id;
 
   Utility util = Utility();
 
   /// Default contruction for when event is created by the user
-  Event(Coordinates location, String locationName, String formattedPeople, DateTime date, TimeOfDay time)
+  Event(Coordinates location, String locationName, String formattedPeople,
+      DateTime date, TimeOfDay time)
       : this.location = location,
         this.formattedPeople = formattedPeople,
         this.date = date,
         this.time = time,
         this.locationName = locationName {
-          people = formattedPeople.split(AddEvent.personDelimiter);
-          for (var i = 0; i < people.length; i++) {
-            people[i] = people[i].trim();
-          }
-        }
+    people = formattedPeople.split(AddEvent.personDelimiter);
+    for (var i = 0; i < people.length; i++) {
+      people[i] = people[i].trim();
+    }
+  }
 
   /// Parsing constructor for importing from the database accoring to the format established by [toMap]
-  // Event.parse(Map<String, dynamic> map)
-  //     : this.location = map['location'],
-  //       this.people = map['person'], /// TODO this isn't right
-  //       this.date = DateTime.parse(map['date']),
-  //       this.time = TimeOfDay(
-  //           hour: int.parse(map['hour']), minute: int.parse(map['minute'])),
-  //       this.locationName = map['locationName'];
+  Event.parse(Map<String, dynamic> map)
+      : this.location = Coordinates(map['latitude'], map['longitude']),
+        this.id = map['id'],
+        this.locationName = map['locationName'],
+        this.formattedPeople = map['people'],
+        this.date = DateTime.parse(map['date']),
+        this.time = TimeOfDay(
+          hour: map['hour'],
+          minute: map['minute'],
+        );
 
   String get formatDate => Utility.formatDate(date);
   String get formatTime => Utility.formatTime(time);
@@ -44,12 +49,12 @@ class Event {
     List<Map<String, dynamic>> output = [];
     people.forEach((person) {
       output.add({
-        'id' : id,
+        'id': id,
         'latitude': location.latitude,
-        'longitude' : location.longitude,
-        'locationName' : locationName,
+        'longitude': location.longitude,
+        'locationName': locationName,
         'people': formattedPeople,
-        'person' : person,
+        'person': person,
         'date': date.toIso8601String(),
         'hour': time.hour,
         'minute': time.minute,
