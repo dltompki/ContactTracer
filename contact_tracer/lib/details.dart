@@ -51,7 +51,7 @@ class Details {
     Card person = Card(
       child: ListTile(
         title: Text('Person'),
-        subtitle: Text(e.person),
+        subtitle: Text(e.formattedPeople),
       ),
     );
 
