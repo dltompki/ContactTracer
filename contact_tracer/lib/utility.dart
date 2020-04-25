@@ -57,6 +57,7 @@ class Utility {
         newString;
   }
 
+  /// Builds a list of [Divider]s and [ListTile]s in the format used in both the [HomeList] and [FilterPersonView]
   static List<Widget> buildRows(BuildContext context, List<Event> eList) {
     List<Widget> rows = [];
 
@@ -70,6 +71,7 @@ class Utility {
     return rows;
   }
 
+  /// Format for [ListTile] used in [HomeList] and [FilterPersonView]
   static Widget _rowFactory(BuildContext context, Event e) {
     return ListTile(
       leading: Icon(Icons.place, color: accentColor),

@@ -36,7 +36,6 @@ class _AddEventState extends State<AddEvent> {
   /// This group of variables are what the [Event] that is being sent back to [HomeList] are constructed with
   Coordinates _inputLocation;
   String _inputLocationName;
-  String _inputPerson;
   DateTime _inputDate;
   TimeOfDay _inputTime;
 

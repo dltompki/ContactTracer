@@ -26,7 +26,7 @@ class _HomeListState extends State<HomeList> {
 
   @override
   Widget build(BuildContext context) {
-    /// Callback function passed to the [AddEvent] screen to enable it to send events back to the [eventList]
+    /// Callback function passed to the [AddEvent] screen to enable it to send events back to the [EventDatabase]
     void addEventToDatabase(Event e) {
       List<Map<String, dynamic>> maps = e.toMaps();
       maps.forEach((map) {

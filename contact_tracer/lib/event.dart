@@ -29,7 +29,7 @@ class Event {
     }
   }
 
-  /// Parsing constructor for importing from the database accoring to the format established by [toMap]
+  /// Parsing constructor for importing from the database accoring to the format established by [toMaps]
   Event.parse(Map<String, dynamic> map)
       : this.location = Coordinates(map['latitude'], map['longitude']),
         this.id = map['id'],
@@ -45,7 +45,11 @@ class Event {
   String get formatDate => Utility.formatDate(date);
   String get formatTime => Utility.formatTime(time);
 
-  /// Export this [Event] as a [Map<String, dynamic>] to enter it into the database
+  /// Export this [Event] as a [List<Map<String, dynamic>>] to enter them into the database
+  /// 
+  /// This function turns on event into multiple database entires because we need to sort by
+  /// person, and the easiest way to do that is to have each entry associated with a single
+  /// person. The [formattedPeople] string is included for when the event needs to be displayed.
   List<Map<String, dynamic>> toMaps() {
     int id = DateTime.now().microsecondsSinceEpoch;
     List<Map<String, dynamic>> output = [];

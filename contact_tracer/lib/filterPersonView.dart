@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'eventDatabase.dart';
 import 'utility.dart';
-import 'homeList.dart';
-import 'event.dart';
 import 'mapView.dart';
+import 'event.dart';
 
 class FilterPersonView extends StatefulWidget {
   @override
@@ -11,23 +10,28 @@ class FilterPersonView extends StatefulWidget {
 }
 
 class _FilterPersonViewState extends State<FilterPersonView> {
+  /// What the list of events is generated based upon
   List<String> _selectedPeople = [];
 
   EventDatabase db = new EventDatabase();
+
+  /// All of the indivduals in the database
   List<String> allPeople;
 
+  /// Map of [allPeople], used to manage checkboxes state
   Map<String, bool> people = {};
 
-  HomeList homeList = new HomeList();
-
+  /// Manages the state of the expansion panel
   bool isExpanded = true;
 
+  /// populates [people] using [allPeople]. should only be run once or [people] will be reset
   void _deriveCheckboxMap() {
     allPeople.forEach((person) {
       people.addEntries([MapEntry(person, false)]);
     });
   }
 
+  /// format for [CheckboxListTile]
   CheckboxListTile _checkboxFactory(String key, int id) {
     return CheckboxListTile(
       title: Text(key),
@@ -40,6 +44,7 @@ class _FilterPersonViewState extends State<FilterPersonView> {
     );
   }
 
+  /// Builds checkboxes using [_checkboxFactory] based upon [people]
   List<CheckboxListTile> _buildCheckboxes() {
     if (people.length == 0) {
       _deriveCheckboxMap();
@@ -54,6 +59,7 @@ class _FilterPersonViewState extends State<FilterPersonView> {
     return _output;
   }
 
+  /// returns all of the keys in [people] whose value is true
   List<String> _deriveSelectedPeople() {
     List<String> output = [];
 
@@ -84,6 +90,8 @@ class _FilterPersonViewState extends State<FilterPersonView> {
       ),
       body: FutureBuilder(
         future: db.getAllPeople(),
+
+        /// returns all individuals in [EventDatabase]
         builder:
             (BuildContext context, AsyncSnapshot<List<String>> allPeopleData) {
           if (allPeopleData.hasData) {
@@ -133,33 +141,18 @@ class _FilterPersonViewState extends State<FilterPersonView> {
                     ],
                   ),
                 ),
-                // Card(
-                //   child: Container(
-                //     child: FutureBuilder(
-                //     future: db.getEventsByPeople(_deriveSelectedPeople()),
-                //     builder: (BuildContext context,
-                //         AsyncSnapshot<List<Event>> eventListData) {
-                //       if (eventListData.hasData) {
-                //         return Column(
-                //           children:
-                //               Utility.buildRows(context, eventListData.data),
-                //         );
-                //       } else {
-                //         return Text('test');
-                //       }
-                //     },
-                //   ),
-                //   ), 
-                // ),
                 Card(
                   child: FutureBuilder(
                     future: db.getEventsByPeople(_deriveSelectedPeople()),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                      return Column(
-                        children: Utility.buildRows(context, snapshot.data),
-                      ); }
-                      else {
+
+                    /// returns a [List<Event>] based upon the currently selected people
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Event>> events) {
+                      if (events.hasData) {
+                        return Column(
+                          children: Utility.buildRows(context, events.data),
+                        );
+                      } else {
                         return Loading();
                       }
                     },

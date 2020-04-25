@@ -9,6 +9,7 @@ class MapView extends StatelessWidget {
   EventDatabase db = new EventDatabase();
   Location location = new Location();
 
+  /// Creates a [Set<Marker>] from the [events] to be displayed on the [GoogleMap]
   Set<Marker> _getMarkers(BuildContext context, List<Event> events) {
     Set<Marker> output = {};
 
@@ -20,7 +21,8 @@ class MapView extends StatelessWidget {
             position: LatLng(event.location.latitude, event.location.longitude),
             consumeTapEvents: true,
             onTap: () {
-              Navigator.of(context).push(new Details(context, event: event).getRoute());
+              Navigator.of(context)
+                  .push(new Details(context, event: event).getRoute());
             },
           ),
         );
@@ -44,10 +46,14 @@ class MapView extends StatelessWidget {
       ),
       body: FutureBuilder(
         future: db.getFilteredEvents(),
+
+        /// returns all events in database, with no duplicates (same as [HomeList])
         builder: (BuildContext context, AsyncSnapshot<List<Event>> events) {
           if (events.hasData) {
             return FutureBuilder(
               future: location.getLocation(),
+
+              /// returns device's current location for the [target] of the [GoogleMap]
               builder: (BuildContext context,
                   AsyncSnapshot<LocationData> locationData) {
                 if (locationData.hasData) {
@@ -75,6 +81,7 @@ class MapView extends StatelessWidget {
   }
 }
 
+/// Custom [CircularProgressIndicator] because it looks bettter. Also used in [FilterPersonView]
 class Loading extends StatelessWidget {
   const Loading({
     Key key,

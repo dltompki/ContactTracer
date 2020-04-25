@@ -43,6 +43,7 @@ class EventDatabase {
     );
   }
 
+  /// convert list of maps that represent events into a list of events
   List<Event> _parseMaps(List<Map<String, dynamic>> maps) {
     List<Event> _output = [];
 
@@ -53,6 +54,7 @@ class EventDatabase {
     return _output;
   }
 
+  /// get every entry in the events table of the database
   Future<List<Event>> getUnfilteredEvents() async {
     /// Get database refrence
     final Database db = await database;
@@ -66,6 +68,7 @@ class EventDatabase {
     return unfilteredEvents;
   }
 
+  /// remove duplicate events based on [id]. why can there be duplicate events you ask? go look at [Event]
   Future<List<Event>> getFilteredEvents({List<Event> eventList}) async {
     List<Event> unfilteredEvents;
 
@@ -92,6 +95,7 @@ class EventDatabase {
     return filteredEvents;
   }
 
+  /// returns all individuals in the event table
   Future<List<String>> getAllPeople() async {
     /// Get all events from the database
     List<Event> unfilteredEvents = await getUnfilteredEvents();
@@ -101,7 +105,8 @@ class EventDatabase {
 
     /// Interate over [unfilteredEvents] and add a person to the list if they arent already on it
     unfilteredEvents.forEach((event) {
-      List<String> people = event.formattedPeople.split(AddEvent.personDelimiter);
+      List<String> people =
+          event.formattedPeople.split(AddEvent.personDelimiter);
       for (var i = 0; i < people.length; i++) {
         people[i] = people[i].trim();
       }
@@ -117,36 +122,23 @@ class EventDatabase {
   }
 
   Future<List<Event>> getEventsByPeople(List<String> people) async {
-    // Get database refrence
-    // final Database db = await database;
-
-    // List<Map<String, dynamic>> allMaps = [];
-
-    // Query for events that have the people
-    // people.forEach((person) async {
-    //   final List<Map<String, dynamic>> maps =
-    //       await db.query('events', where: 'person = ?', whereArgs: [person]);
-
-    //   maps.forEach((map) {
-    //     allMaps.add(map);
-    //   });
-    // });
-
-    // final List<Event> unfilteredEvents = _parseMaps(allMaps);
-
     // get all events
     final List<Event> unfilteredEvents = await getUnfilteredEvents();
 
+    // list of events after being filtered by person
     List<Event> eventsByPeople = [];
-    
+
+    /// filter events so only ones containing a person from [people] get entered into [eventsByPeople]
     unfilteredEvents.forEach((event) {
       people.forEach((person) {
-        if(event.person == person) {
+        if (event.person == person) {
           eventsByPeople.add(event);
         }
       });
     });
 
     return getFilteredEvents(eventList: eventsByPeople);
+
+    /// remove duplicates
   }
 }
