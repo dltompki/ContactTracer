@@ -11,6 +11,7 @@ class Event {
   final Coordinates location;
   final String locationName;
   int id;
+  String person;
 
   Utility util = Utility();
 
@@ -35,6 +36,7 @@ class Event {
         this.locationName = map['locationName'],
         this.formattedPeople = map['people'],
         this.date = DateTime.parse(map['date']),
+        this.person = map['person'],
         this.time = TimeOfDay(
           hour: map['hour'],
           minute: map['minute'],

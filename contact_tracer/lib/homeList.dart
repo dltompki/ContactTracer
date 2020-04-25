@@ -5,6 +5,8 @@ import 'addEvent.dart';
 import 'contactTracer.dart';
 import 'eventDatabase.dart';
 import 'mapView.dart';
+import 'filterPersonView.dart';
+import 'utility.dart';
 
 class HomeList extends StatefulWidget {
   @override
@@ -24,14 +26,6 @@ class _HomeListState extends State<HomeList> {
 
   @override
   Widget build(BuildContext context) {
-    /// Opens the [Details] screen for the [Event] that was clicked on
-    void _pushDetails(Event e) {
-      Navigator.of(context).push(new Details(
-        context,
-        event: e,
-      ).getRoute());
-    }
-
     /// Callback function passed to the [AddEvent] screen to enable it to send events back to the [eventList]
     void addEventToDatabase(Event e) {
       List<Map<String, dynamic>> maps = e.toMaps();
@@ -66,39 +60,19 @@ class _HomeListState extends State<HomeList> {
       );
     }
 
-    /// Builds a single [ListTile] for the [Event] passed in according to consistent formatting for [HomeList]
-    Widget _rowFactory(Event e) {
-      return ListTile(
-        leading: Icon(Icons.place, color: accentColor),
-        title: Text(e.locationName),
-        subtitle: Text(e.formattedPeople),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(e.formatDate),
-            Text(e.formatTime),
-          ],
+    /// Opens the [FilterPersonView] screen
+    void _pushFilterPersonView() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return new FilterPersonView();
+          },
         ),
-        onTap: () => {_pushDetails(e)},
       );
     }
 
-    /// Calls [_rowFactory] for every [Event] in the [List<Event>] to build the entire list of formatted [ListTile]s
-    List<Widget> _buildRows(List<Event> eList) {
-      List<Widget> rows = [];
-
-      for (var e in eList) {
-        rows.add(_rowFactory(e));
-        rows.add(Divider());
-
-        /// spacer between each [ListTile]
-      }
-
-      return rows;
-    }
-
     return FutureBuilder(
-      future: db.getAllEvents(),
+      future: db.getFilteredEvents(),
       builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
@@ -121,7 +95,7 @@ class _HomeListState extends State<HomeList> {
               ],
             ),
             body: ListView(
-              children: _buildRows(snapshot.data),
+              children: Utility.buildRows(context, snapshot.data),
             ),
             drawer: Drawer(
               child: ListView(
@@ -135,6 +109,14 @@ class _HomeListState extends State<HomeList> {
                       leading: Icon(Icons.map),
                       title: Text("Map View"),
                       onTap: _pushMapView,
+                    ),
+                    color: primaryColor,
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text("Filter By Person"),
+                      onTap: _pushFilterPersonView,
                     ),
                     color: primaryColor,
                   ),

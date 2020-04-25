@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'event.dart';
+import 'addEvent.dart';
 
 class EventDatabase {
   final Future<Database> database;
@@ -42,7 +43,17 @@ class EventDatabase {
     );
   }
 
-  Future<List<Event>> getAllEvents() async {
+  List<Event> _parseMaps(List<Map<String, dynamic>> maps) {
+    List<Event> _output = [];
+
+    List.generate(maps.length, (index) {
+      _output.add(Event.parse(maps[index]));
+    });
+
+    return _output;
+  }
+
+  Future<List<Event>> getUnfilteredEvents() async {
     /// Get database refrence
     final Database db = await database;
 
@@ -50,22 +61,92 @@ class EventDatabase {
     final List<Map<String, dynamic>> maps = await db.query('events');
 
     /// Parse maps into events
-    final List<Event> unfilteredEvents = List.generate(maps.length, (index) {
-      return Event.parse(maps[index]);
-    });
+    final List<Event> unfilteredEvents = _parseMaps(maps);
+
+    return unfilteredEvents;
+  }
+
+  Future<List<Event>> getFilteredEvents({List<Event> eventList}) async {
+    List<Event> unfilteredEvents;
+
+    /// Get all events from database
+    if (eventList == null) {
+      unfilteredEvents = await getUnfilteredEvents();
+    } else {
+      unfilteredEvents = eventList;
+    }
 
     /// Define list of events we will return
     List<Event> filteredEvents = [];
+
     /// Define list of ids that have already been entered into the filteredEvents list
     List<int> ids = [];
-    
+
     unfilteredEvents.forEach((e) {
-      if(!ids.contains(e.id)) {
+      if (!ids.contains(e.id)) {
         ids.add(e.id);
         filteredEvents.add(e);
       }
     });
 
     return filteredEvents;
+  }
+
+  Future<List<String>> getAllPeople() async {
+    /// Get all events from the database
+    List<Event> unfilteredEvents = await getUnfilteredEvents();
+
+    /// Define list of people we will return
+    List<String> peopleOutput = [];
+
+    /// Interate over [unfilteredEvents] and add a person to the list if they arent already on it
+    unfilteredEvents.forEach((event) {
+      List<String> people = event.formattedPeople.split(AddEvent.personDelimiter);
+      for (var i = 0; i < people.length; i++) {
+        people[i] = people[i].trim();
+      }
+
+      people.forEach((person) {
+        if (!peopleOutput.contains(person)) {
+          peopleOutput.add(person);
+        }
+      });
+    });
+
+    return peopleOutput;
+  }
+
+  Future<List<Event>> getEventsByPeople(List<String> people) async {
+    // Get database refrence
+    // final Database db = await database;
+
+    // List<Map<String, dynamic>> allMaps = [];
+
+    // Query for events that have the people
+    // people.forEach((person) async {
+    //   final List<Map<String, dynamic>> maps =
+    //       await db.query('events', where: 'person = ?', whereArgs: [person]);
+
+    //   maps.forEach((map) {
+    //     allMaps.add(map);
+    //   });
+    // });
+
+    // final List<Event> unfilteredEvents = _parseMaps(allMaps);
+
+    // get all events
+    final List<Event> unfilteredEvents = await getUnfilteredEvents();
+
+    List<Event> eventsByPeople = [];
+    
+    unfilteredEvents.forEach((event) {
+      people.forEach((person) {
+        if(event.person == person) {
+          eventsByPeople.add(event);
+        }
+      });
+    });
+
+    return getFilteredEvents(eventList: eventsByPeople);
   }
 }

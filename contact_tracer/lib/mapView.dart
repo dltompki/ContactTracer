@@ -43,7 +43,7 @@ class MapView extends StatelessWidget {
         title: Text('Map View'),
       ),
       body: FutureBuilder(
-        future: db.getAllEvents(),
+        future: db.getFilteredEvents(),
         builder: (BuildContext context, AsyncSnapshot<List<Event>> events) {
           if (events.hasData) {
             return FutureBuilder(
@@ -55,7 +55,7 @@ class MapView extends StatelessWidget {
                     initialCameraPosition: CameraPosition(
                       target: LatLng(locationData.data.latitude,
                           locationData.data.longitude),
-                      zoom: 18,
+                      zoom: 12,
                     ),
                     mapType: MapType.hybrid,
                     myLocationEnabled: true,

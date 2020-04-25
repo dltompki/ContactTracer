@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:intl/intl.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'event.dart';
+import 'contactTracer.dart';
+import 'details.dart';
 
 class Utility {
   static final local = DefaultMaterialLocalizations();
@@ -14,7 +17,7 @@ class Utility {
     return local.formatTimeOfDay(time);
   }
 
-  /// Formats date according to custom date format 
+  /// Formats date according to custom date format
   static String formatDate(DateTime date) {
     return myFormat.format(date);
   }
@@ -52,5 +55,42 @@ class Utility {
     return existingString +
         ((existingString.length > 0) ? delimiter + ' ' : '') +
         newString;
+  }
+
+  static List<Widget> buildRows(BuildContext context, List<Event> eList) {
+    List<Widget> rows = [];
+
+    for (var e in eList) {
+      rows.add(_rowFactory(context, e));
+      rows.add(Divider());
+
+      /// spacer between each [ListTile]
+    }
+
+    return rows;
+  }
+
+  static Widget _rowFactory(BuildContext context, Event e) {
+    return ListTile(
+      leading: Icon(Icons.place, color: accentColor),
+      title: Text(e.locationName),
+      subtitle: Text(e.formattedPeople),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(e.formatDate),
+          Text(e.formatTime),
+        ],
+      ),
+      onTap: () => {_pushDetails(context, e)},
+    );
+  }
+
+  /// Opens the [Details] screen for the [Event] that was clicked on
+  static void _pushDetails(BuildContext context, Event e) {
+    Navigator.of(context).push(new Details(
+      context,
+      event: e,
+    ).getRoute());
   }
 }
